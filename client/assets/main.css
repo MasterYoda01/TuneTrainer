@@ -1,4 +1,5 @@
 /* Add some global styles here! */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;200;300;400;700&family=Roboto:ital,wght@0,100;0,300;1,100;1,300;1,400&display=swap");
 
 :root {
   --red: rgb(208, 67, 12);
@@ -29,4 +30,135 @@ a.button {
   justify-content: center;
   align-items: center;
   gap: 1em;
+}
+
+.global-title {
+  display: flex;
+  margin-left: 1em;
+  font-size: 1.5rem;
+}
+
+.global-page-layout {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 60%;
+  padding-left: 20px;
+  padding-right: 20px;
+  box-sizing: border-box;
+}
+
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+body {
+  font-family: "Noto Sans", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f2f5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Noto Sans", sans-serif;
+}
+
+.global-button-blue {
+  background-color: #d9cafa;
+  color: black;
+  padding: 10px 25px;
+  margin: 8px 0;
+  border: 1px solid black;
+  border-color: black;
+  font-weight: 550;
+  border-radius: 5px;
+}
+.global-button-blue-border {
+  background-color: #d9cafa;
+  color: black;
+  padding: 10px 25px;
+  margin: 8px 0;
+  border: 1px solid black;
+  border-color: black;
+  font-weight: 550;
+  border-radius: 5px;
+}
+
+.global-button-green {
+  background-color: #ffe9d6;
+  color: black;
+  padding: 10px 25px;
+  margin: 8px 0;
+  border: 1px solid black;
+  border-color: black;
+  font-weight: 550;
+  border-radius: 5px;
+}
+
+.global-button {
+  background-color: #d9cafa;
+  color: black;
+  padding: 10px 25px;
+  margin: 8px 0;
+  border: 1px solid black;
+  border-color: black;
+  font-weight: 550;
+  border-radius: 5px;
+}
+
+.global-button-red-border {
+  background-color: transparent;
+  border-color: red;
+  color: red;
+}
+
+.global-button-blue-border {
+  background-color: transparent;
+  border-color: #d9cafa;
+}
+
+.smart-collection-block {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  width: calc(33.333% - 16px);
+  text-decoration: none;
+  background-color: white;
+  color: inherit;
+}
+
+.smart-collection-tags {
+  display: flex;
+  gap: 8px;
+}
+
+.smart-tag {
+  background-color: #f2f2f2;
+  padding: 3px 5px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.pulsate {
+  align-self: flex-end;
+  animation: pulsate 1.5s infinite ease-in-out;
+}
+
+@keyframes pulsate {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }

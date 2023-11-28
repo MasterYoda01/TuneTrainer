@@ -3,7 +3,7 @@ import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { computed, onBeforeMount } from "vue";
-import { RouterLink, RouterView, useRoute } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 
 const currentRoute = useRoute();
 const currentRouteName = computed(() => currentRoute.name);
@@ -11,7 +11,6 @@ const userStore = useUserStore();
 const { isLoggedIn } = storeToRefs(userStore);
 const { toast } = storeToRefs(useToastStore());
 
-// Make sure to update the session before mounting the app in case the user is already logged in
 onBeforeMount(async () => {
   try {
     await userStore.updateSession();
@@ -22,74 +21,57 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <header>
-    <nav>
-      <div class="title">
-        <img src="@/assets/images/logo.svg" />
-        <RouterLink :to="{ name: 'Home' }">
-          <h1>Social Media App</h1>
-        </RouterLink>
-      </div>
-      <ul>
-        <li>
-          <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink>
-        </li>
-        <li v-if="isLoggedIn">
-          <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
-        </li>
-        <li v-else>
-          <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }"> Login </RouterLink>
-        </li>
-      </ul>
-    </nav>
-    <article v-if="toast !== null" class="toast" :class="toast.style">
-      <p>{{ toast.message }}</p>
-    </article>
-  </header>
-  <RouterView />
+  <div class="app-container">
+    <header v-if="isLoggedIn">
+      <nav>
+        <div class="nav-buttons">
+          <!-- <p @click="$router.push({ name: 'Feed' })" :class="{ active: currentRouteName == 'Feed' }">SmartFeed</p> -->
+          <p @click="$router.push({ name: 'Collections' })" :class="{ active: currentRouteName == 'Collections' }">Collections</p>
+          <p @click="$router.push({ name: 'GenerateSong' })" :class="{ active: currentRouteName == 'GenerateSong' }">Generate Song</p>
+          <p @click="$router.push({ name: 'Settings' })" :class="{ active: currentRouteName == 'Settings' }">Settings</p>
+        </div>
+      </nav>
+      <article v-if="toast !== null" class="toast" :class="toast.style">
+        <p>{{ toast.message }}</p>
+      </article>
+    </header>
+    <div class="content">
+      <RouterView />
+    </div>
+  </div>
 </template>
-
 <style scoped>
 @import "./assets/toast.css";
+.app-container {
+  display: flex;
+  flex-direction: column;
+}
 
 nav {
-  padding: 1em 2em;
-  background-color: lightgray;
+  width: 100%;
+  padding: 1em;
+  background-color: white;
   display: flex;
-  align-items: center;
+  justify-content: center; /* Center the nav contents */
 }
 
-h1 {
-  font-size: 2em;
-  margin: 0;
+.content {
+  flex-grow: 1;
+  width: 100%;
 }
 
-.title {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
+.nav-buttons {
+  display: flex; /* Apply flex layout to nav buttons */
+  align-items: center; /* Align items vertically */
 }
 
-img {
-  height: 2em;
+.nav-buttons p {
+  margin: 0 10px; /* Add horizontal spacing between menu items */
+  padding: 0.5em;
 }
 
-a {
-  font-size: large;
-  color: black;
-  text-decoration: none;
-}
-
-ul {
-  list-style-type: none;
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  gap: 1em;
-}
-
-.underline {
-  text-decoration: underline;
+.nav-buttons p:hover,
+.nav-buttons p.active {
+  background-color: #f0f2f5;
 }
 </style>

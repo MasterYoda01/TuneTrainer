@@ -2,24 +2,46 @@ import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
-import HomeView from "../views/HomeView.vue";
+
+import FeedView from "../views/FeedView.vue";
+import GenerateSongView from "../views/GenerateSong.vue";
 import LoginView from "../views/LoginView.vue";
-import NotFoundView from "../views/NotFoundView.vue";
 import SettingView from "../views/SettingView.vue";
+import SingleSmartCollectionView from "../views/SingleSmartCollectionView.vue";
+import SmartCollectionsView from "../views/SmartCollectionsView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/",
-      name: "Home",
-      component: HomeView,
+      path: "/feed",
+      name: "Feed",
+      component: FeedView,
+      meta: { requiresAuth: true, breadcrumb: "Feed" },
+    },
+    {
+      path: "/GenerateSong",
+      name: "GenerateSong",
+      component: GenerateSongView,
+      meta: { requiresAuth: true, breadcrumb: "GenerateSong" },
+    },
+    {
+      path: "/collections",
+      name: "Collections",
+      component: SmartCollectionsView,
+      meta: { requiresAuth: true, breadcrumb: "Collections" },
+    },
+    {
+      path: "/smartcollection/:collectionname",
+      name: "SmartCollection",
+      component: SingleSmartCollectionView,
+      meta: { requiresAuth: true, breadcrumb: "SmartCollection" },
     },
     {
       path: "/setting",
       name: "Settings",
       component: SettingView,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, breadcrumb: "Settings" },
     },
     {
       path: "/login",
@@ -29,14 +51,14 @@ const router = createRouter({
       beforeEnter: (to, from) => {
         const { isLoggedIn } = storeToRefs(useUserStore());
         if (isLoggedIn.value) {
-          return { name: "Settings" };
+          return { name: "Feed" };
         }
       },
     },
     {
       path: "/:catchAll(.*)",
       name: "not-found",
-      component: NotFoundView,
+      component: LoginView,
     },
   ],
 });
@@ -46,6 +68,10 @@ const router = createRouter({
  */
 router.beforeEach((to, from) => {
   const { isLoggedIn } = storeToRefs(useUserStore());
+
+  if (to.path === "/") {
+    return isLoggedIn.value ? { name: "Feed" } : { name: "Login" };
+  }
 
   if (to.meta.requiresAuth && !isLoggedIn.value) {
     return { name: "Login" };
