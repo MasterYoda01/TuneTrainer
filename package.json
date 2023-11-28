@@ -43,6 +43,7 @@
     "vue-tsc": "^1.8.11"
   },
   "dependencies": {
+    "babel": "^6.23.0",
     "connect-mongo": "^5.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
