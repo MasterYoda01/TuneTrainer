@@ -14,7 +14,7 @@ async function login() {
     const logindata = await loginUser(username.value, password.value);
     console.log(logindata);
     await updateSession();
-    void router.push({ name: "Feed" });
+    void router.push({ name: "GenerateSong" });
   } catch (error) {
     console.log("Login Error:", error);
     errorMessage.value = "⚠️ Username or password is incorrect";
