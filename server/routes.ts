@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Friend, Post, User, WebSession } from "./app";
+import { Friend, Post, SongCollection, User, WebSession } from "./app";
 import { PostDoc, PostOptions } from "./concepts/post";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -88,6 +88,39 @@ class Routes {
     const user = WebSession.getUser(session);
     await Post.isAuthor(user, _id);
     return Post.delete(_id);
+  }
+
+  @Router.get("/collections")
+  async getCollection(owner?: string) {
+    let collection;
+    if (owner) {
+      const id = (await User.getUserByUsername(owner))._id;
+      collection = await SongCollection.getByAuthor(id);
+    } else {
+      collection = await SongCollection.getCollection({});
+    }
+    return Responses.collections(collection);
+  }
+
+  @Router.post("/collections")
+  async createCollection(session: WebSessionDoc, title: string, description: string, songifiedNotes: ObjectId[]) {
+    const user = WebSession.getUser(session);
+    const created = await SongCollection.create(user, title, description, songifiedNotes);
+    return { msg: created.msg, collection: await Responses.collection(created.songCollection) };
+  }
+
+  @Router.patch("/collections/:_id")
+  async updateCollection(session: WebSessionDoc, _id: ObjectId, update: Partial<PostDoc>) {
+    const user = WebSession.getUser(session);
+    await SongCollection.isOwner(user, _id);
+    return await SongCollection.update(_id, update);
+  }
+
+  @Router.delete("/posts/:_id")
+  async deleteCollection(session: WebSessionDoc, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    await SongCollection.isOwner(user, _id);
+    return SongCollection.deleteCollection(_id);
   }
 
   @Router.get("/friends")
