@@ -46,6 +46,7 @@ const showRegister = ref(false);
   font-weight: 550;
   border-radius: 5px;
   margin: 0 -5em;
+  font-family: 'Righteous', sans-serif;
 }
 .switch:hover{
   background-color: #5CB48C;

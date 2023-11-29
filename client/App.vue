@@ -62,16 +62,30 @@ nav {
 
 .nav-buttons {
   display: flex; /* Apply flex layout to nav buttons */
-  align-items: center; /* Align items vertically */
+  text-align: right;
+  margin-bottom: 2px;
 }
 
 .nav-buttons p {
   margin: 0 10px; /* Add horizontal spacing between menu items */
   padding: 0.5em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 15px;
+  padding: 5px 9px;
+}
+.nav-buttons p:hover{
+  background-color: #fff;
+  border: solid 2px #5CB48C;
+  border-radius: 8px;
+  padding: 3px 7px;
+}
+.nav-buttons p.active {
+  background-color: #5CB48C;
+  color: #fff;
+  border-radius: 8px;
 }
 
-.nav-buttons p:hover,
-.nav-buttons p.active {
-  background-color: #f0f2f5;
-}
+
 </style>
