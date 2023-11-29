@@ -29,4 +29,8 @@ export default class SongifiedNoteConcept {
   async editRawNote(_id: string, newRawNote: string) {
     return this.songifiednotes.updateOne({ _id: new ObjectId(_id) }, { rawNote: newRawNote });
   }
+
+  async getSongifiedNotesByAuthor(authorId: string) {
+    return this.songifiednotes.readMany({ author: new ObjectId(authorId) });
+  }
 }

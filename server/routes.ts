@@ -105,6 +105,12 @@ class Routes {
     await SongifiedNote.editRawNote(_id, newRawNote);
     return { msg: "Raw note updated!" };
   }
+
+  @Router.get("/songifiednotes/author/:authorId")
+  async getSongifiedNotesByAuthor(authorId: string) {
+    const songNote = await SongifiedNote.getSongifiedNotesByAuthor(authorId);
+    return { msg: "Raw note updated!", songNote: songNote };
+  }
 }
 
 export default getExpressRouter(new Routes());
