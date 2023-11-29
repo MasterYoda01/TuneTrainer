@@ -25,16 +25,20 @@ input[type="password"] {
 
 button[type="submit"] {
   width: 100%;
-  background-color: #ccc;
+  background-color: #f0f2f5;
   color: black;
   padding: 14px 20px;
   margin: 8px 0;
-  font-weight: 550;
   border-radius: 5px;
+  font-family: 'Righteous', sans-serif;
 }
-
+button{
+  
+  letter-spacing: 1px;
+}
 button:hover {
   background-color: #5CB48C;
+  color: #fff;
 }
 a.button {
   color: #212529;
@@ -179,7 +183,9 @@ h6 {
   align-self: flex-end;
   animation: pulsate 1.5s infinite ease-in-out;
 }
-
+.container{
+  padding: 3% 12%;
+}
 @keyframes pulsate {
   0% {
     opacity: 1;

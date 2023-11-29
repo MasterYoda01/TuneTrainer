@@ -3,9 +3,7 @@ import GenerateSongComponent from "@/components/GenerateSong/GenerateSongCompone
 </script>
 
 <template>
-  <div class="createsong_layout">
-    <GenerateSongComponent />
-  </div>
+  <GenerateSongComponent />
 </template>
 
 <style scoped>
