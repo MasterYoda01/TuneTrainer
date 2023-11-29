@@ -1,12 +1,9 @@
-import { ObjectId } from "mongodb";
-
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Friend, Post, SongCollection, User, WebSession } from "./app";
-import { PostDoc, PostOptions } from "./concepts/post";
+import { Friend, Post, SongifiedNote, User, WebSession } from "./app";
+import { PostDoc } from "./concepts/post";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
-import Responses from "./responses";
 
 class Routes {
   @Router.get("/session")
@@ -57,23 +54,45 @@ class Routes {
     return { msg: "Logged out!" };
   }
 
-  @Router.get("/posts")
-  async getPosts(author?: string) {
-    let posts;
-    if (author) {
-      const id = (await User.getUserByUsername(author))._id;
-      posts = await Post.getByAuthor(id);
+  // generate songified note concept
+  @Router.post("/generate/songifiednote/")
+  async generateSongifiedNote(session: WebSessionDoc, rawNote: string, lyricsTemplate: string) {
+    //UNCOMMENT THIS LINE TO TEST WITH GPT
+    // const generatedLyrics = await generateSongLyrics(rawNote, lyricsTemplate);
+
+    // TEST LYRICS
+    const generatedLyrics = `The lab isn't the best place to find an answer\n
+    So the classroom is where I go\n
+    Me and my peers at the desks, drawing shapes\n
+    Sketching fast and then we analyze slow\n
+    Come over and start up a discussion with just me\n
+    And trust me, I'll give it a chance now\n
+    Take your model, stop, put it on the table\n
+    And then we start to bond, and now we're talking like\n
+    Chem, you know I want your shape\n
+    Your shape predicts how molecules will be\n
+    Come on now, follow my lead\n
+    I may be curious, don't mind me\n
+    Say, girl, let's not talk too much\n
+    Draw on my paper and put that theory in me\n
+    Come on now, follow my lead\n
+    Come, come on now, follow my lead\n
+    I'm in love with the VSEPR, you see`;
+
+    if (generatedLyrics) {
+      const user = WebSession.getUser(session);
+      const songifiednote = await SongifiedNote.createSongifiedNote(user, rawNote, generatedLyrics, lyricsTemplate);
+
+      return { msg: "Song Generated", songifiednote: songifiednote };
     } else {
-      posts = await Post.getPosts({});
+      return { msg: "Couldn't generate song" };
     }
-    return Responses.posts(posts);
   }
 
-  @Router.post("/posts")
-  async createPost(session: WebSessionDoc, content: string, options?: PostOptions) {
-    const user = WebSession.getUser(session);
-    const created = await Post.create(user, content, options);
-    return { msg: created.msg, post: await Responses.post(created.post) };
+  @Router.delete("/delete/songifiednote")
+  async deleteSongifiedNote(_id: string) {
+    await SongifiedNote.deleteSongifiedNote(_id);
+    return { msg: "Songified note deleted!" };
   }
 
   @Router.patch("/posts/:_id")
@@ -90,39 +109,6 @@ class Routes {
     return Post.delete(_id);
   }
 
-  @Router.get("/collections")
-  async getCollection(owner?: string) {
-    let collection;
-    if (owner) {
-      const id = (await User.getUserByUsername(owner))._id;
-      collection = await SongCollection.getByAuthor(id);
-    } else {
-      collection = await SongCollection.getCollection({});
-    }
-    return Responses.collections(collection);
-  }
-
-  @Router.post("/collections")
-  async createCollection(session: WebSessionDoc, title: string, description: string, songifiedNotes: ObjectId[]) {
-    const user = WebSession.getUser(session);
-    const created = await SongCollection.create(user, title, description, songifiedNotes);
-    return { msg: created.msg, collection: await Responses.collection(created.songCollection) };
-  }
-
-  @Router.patch("/collections/:_id")
-  async updateCollection(session: WebSessionDoc, _id: ObjectId, update: Partial<PostDoc>) {
-    const user = WebSession.getUser(session);
-    await SongCollection.isOwner(user, _id);
-    return await SongCollection.update(_id, update);
-  }
-
-  @Router.delete("/collections/:_id")
-  async deleteCollection(session: WebSessionDoc, _id: ObjectId) {
-    const user = WebSession.getUser(session);
-    await SongCollection.isOwner(user, _id);
-    return SongCollection.deleteCollection(_id);
-  }
-
   @Router.get("/friends")
   async getFriends(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
@@ -136,38 +122,16 @@ class Routes {
     return await Friend.removeFriend(user, friendId);
   }
 
-  @Router.get("/friend/requests")
-  async getRequests(session: WebSessionDoc) {
-    const user = WebSession.getUser(session);
-    return await Responses.friendRequests(await Friend.getRequests(user));
+  @Router.patch("/edit/rawnote/songifiednote")
+  async editRawNote(_id: string, newRawNote: string) {
+    await SongifiedNote.editRawNote(_id, newRawNote);
+    return { msg: "Raw note updated!" };
   }
 
-  @Router.post("/friend/requests/:to")
-  async sendFriendRequest(session: WebSessionDoc, to: string) {
-    const user = WebSession.getUser(session);
-    const toId = (await User.getUserByUsername(to))._id;
-    return await Friend.sendRequest(user, toId);
-  }
-
-  @Router.delete("/friend/requests/:to")
-  async removeFriendRequest(session: WebSessionDoc, to: string) {
-    const user = WebSession.getUser(session);
-    const toId = (await User.getUserByUsername(to))._id;
-    return await Friend.removeRequest(user, toId);
-  }
-
-  @Router.put("/friend/accept/:from")
-  async acceptFriendRequest(session: WebSessionDoc, from: string) {
-    const user = WebSession.getUser(session);
-    const fromId = (await User.getUserByUsername(from))._id;
-    return await Friend.acceptRequest(fromId, user);
-  }
-
-  @Router.put("/friend/reject/:from")
-  async rejectFriendRequest(session: WebSessionDoc, from: string) {
-    const user = WebSession.getUser(session);
-    const fromId = (await User.getUserByUsername(from))._id;
-    return await Friend.rejectRequest(fromId, user);
+  @Router.get("/songifiednotes/author/:authorId")
+  async getSongifiedNotesByAuthor(authorId: string) {
+    const songNote = await SongifiedNote.getSongifiedNotesByAuthor(authorId);
+    return { msg: "Raw note updated!", songNote: songNote };
   }
 }
 
