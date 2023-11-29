@@ -93,6 +93,18 @@ class Routes {
     await SongifiedNote.deleteSongifiedNote(_id);
     return { msg: "Songified note deleted!" };
   }
+
+  @Router.patch("/edit/generatedlyrics/songifiednote")
+  async editGeneratedLyrics(_id: string, newLyrics: string) {
+    await SongifiedNote.editGeneratedLyrics(_id, newLyrics);
+    return { msg: "Generated lyrics updated!" };
+  }
+
+  @Router.patch("/edit/rawnote/songifiednote")
+  async editRawNote(_id: string, newRawNote: string) {
+    await SongifiedNote.editRawNote(_id, newRawNote);
+    return { msg: "Raw note updated!" };
+  }
 }
 
 export default getExpressRouter(new Routes());
