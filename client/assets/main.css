@@ -1,5 +1,5 @@
 /* Add some global styles here! */
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;200;300;400;700&family=Roboto:ital,wght@0,100;0,300;1,100;1,300;1,400&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
 
 :root {
   --red: rgb(208, 67, 12);
@@ -9,12 +9,33 @@
 button.btn-small {
   font-size: 80%;
 }
-
 button.button-error {
   color: white;
   background: var(--red);
 }
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
 
+button[type="submit"] {
+  width: 100%;
+  background-color: #ccc;
+  color: black;
+  padding: 14px 20px;
+  margin: 8px 0;
+  font-weight: 550;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #5CB48C;
+}
 a.button {
   color: #212529;
   background-color: #f1f3f5;
@@ -24,6 +45,11 @@ a.button {
   text-decoration: none;
 }
 
+.major-labels{
+  font-size: 65px;
+  margin: -1% 0;
+  color: #5CB48C
+}
 .column {
   display: flex;
   flex-direction: column;
@@ -55,10 +81,11 @@ a.button {
 }
 
 body {
-  font-family: "Noto Sans", sans-serif;
+  font-family: "Arial", sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f0f2f5;
+  font-size: 18px;
 }
 
 h1,
@@ -67,7 +94,9 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Noto Sans", sans-serif;
+  font-family: 'Righteous', sans-serif;
+  text-transform: lowercase;
+  letter-spacing: 1px;
 }
 
 .global-button-blue {
