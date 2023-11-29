@@ -116,7 +116,7 @@ class Routes {
     return await SongCollection.update(_id, update);
   }
 
-  @Router.delete("/posts/:_id")
+  @Router.delete("/collections/:_id")
   async deleteCollection(session: WebSessionDoc, _id: ObjectId) {
     const user = WebSession.getUser(session);
     await SongCollection.isOwner(user, _id);
