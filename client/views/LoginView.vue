@@ -13,7 +13,7 @@ const showRegister = ref(false);
     </div>
     <div class="sections">
       <div class="left-section">
-        <span class="welcome-text">Welcome to TuneTrainer</span>
+        <h2 class="major-labels">Welcome to <span style="color:black">TuneTrainer</span></h2>
         <p class="emoji-text">🔍 Embrace Harmonic Learning</p>
         <p>Immerse in a unique space where study notes transform into catchy songs, replacing mundane learning methods. No traditional notes, just melodious memory aids!</p>
 
@@ -31,7 +31,7 @@ const showRegister = ref(false);
           <LoginForm />
         </div>
         <hr />
-        <button class="global-button local-button" @click="showRegister = !showRegister">
+        <button class="switch" @click="showRegister = !showRegister">
           {{ showRegister ? "Already have an account? Login" : "Create Account" }}
         </button>
       </div>
@@ -40,48 +40,46 @@ const showRegister = ref(false);
 </template>
 
 <style scoped>
+.switch{
+  background-color: #ccc;
+  padding: 14px 20px;
+  font-weight: 550;
+  border-radius: 5px;
+  margin: 0 -5em;
+}
+.switch:hover{
+  background-color: #5CB48C;
+}
 .main-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  /* padding: 0 0 0 8em; */
   background-color: #f0f2f5;
 }
 .sections {
   display: flex;
   flex-direction: row;
+  padding: 0 7em;
 }
-
-.left-section,
-.right-section {
-  width: 48%;
-  border: 1px;
-  margin: 0 100px;
-}
-
 .logo-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-bottom: 100px;
+  margin-bottom: 80px;
 }
 
 .logo {
   width: 150px;
   height: auto;
 }
-
-.welcome-text {
-  font-family: "Noto Sans", sans-serif;
-  font-weight: 700;
-  font-size: 36px;
-}
 .local-button {
   width: 50%;
   background-color: #ffe9d6;
   color: black;
-  padding: 14px 20px;
+  /* padding: 14px 20px; */
   margin: 8px 0;
   border: 1px solid black;
   border-color: black;
@@ -92,14 +90,18 @@ const showRegister = ref(false);
 .feature-list {
   list-style: disc;
   margin-top: 20px;
-  padding-left: 20px;
+  /* padding-left: 20px; */
 }
 
+.left-section {
+  border: 1px;
+  margin-right: 2em;
+  /* margin: 0 100px; */
+}
 .right-section {
-  width: 28%;
-  margin-right: 200px;
-  margin-left: 0;
-  padding: 20px 0;
+  margin-top: 0em ;
+  width: 48%;
+  padding: 40px 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -110,6 +112,7 @@ const showRegister = ref(false);
 
 .emoji-text {
   font-size: 24px;
+  font-weight: 400;
 }
 
 .logo-top-center {
