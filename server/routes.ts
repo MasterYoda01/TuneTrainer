@@ -1,9 +1,8 @@
 import { Router, getExpressRouter } from "./framework/router";
 
-import { User, WebSession } from "./app";
+import { SongifiedNote, User, WebSession } from "./app";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
-import { generateSongLyrics } from "./gptHelpers";
 
 class Routes {
   @Router.get("/session")
@@ -25,7 +24,6 @@ class Routes {
   @Router.post("/users")
   async createUser(session: WebSessionDoc, username: string, password: string) {
     WebSession.isLoggedOut(session);
-    console.log("here", username, password);
     return await User.create(username, password);
   }
 
@@ -57,9 +55,43 @@ class Routes {
 
   // generate songified note concept
   @Router.post("/generate/songifiednote/")
-  async generateSongifiedNote(rawNote: string, lyricsTemplate: string) {
-    const generatedSong = await generateSongLyrics(rawNote, lyricsTemplate);
-    return { msg: "Song Generated", lyrics: generatedSong };
+  async generateSongifiedNote(session: WebSessionDoc, rawNote: string, lyricsTemplate: string) {
+    //UNCOMMENT THIS LINE TO TEST WITH GPT
+    // const generatedLyrics = await generateSongLyrics(rawNote, lyricsTemplate);
+
+    // TEST LYRICS
+    const generatedLyrics = `The lab isn't the best place to find an answer\n
+    So the classroom is where I go\n
+    Me and my peers at the desks, drawing shapes\n
+    Sketching fast and then we analyze slow\n
+    Come over and start up a discussion with just me\n
+    And trust me, I'll give it a chance now\n
+    Take your model, stop, put it on the table\n
+    And then we start to bond, and now we're talking like\n
+    Chem, you know I want your shape\n
+    Your shape predicts how molecules will be\n
+    Come on now, follow my lead\n
+    I may be curious, don't mind me\n
+    Say, girl, let's not talk too much\n
+    Draw on my paper and put that theory in me\n
+    Come on now, follow my lead\n
+    Come, come on now, follow my lead\n
+    I'm in love with the VSEPR, you see`;
+
+    if (generatedLyrics) {
+      const user = WebSession.getUser(session);
+      const songifiednote = await SongifiedNote.createSongifiedNote(user, rawNote, generatedLyrics, lyricsTemplate);
+
+      return { msg: "Song Generated", songifiednote: songifiednote };
+    } else {
+      return { msg: "Couldn't generate song" };
+    }
+  }
+
+  @Router.delete("/delete/songifiednote")
+  async deleteSongifiedNote(_id: string) {
+    await SongifiedNote.deleteSongifiedNote(_id);
+    return { msg: "Songified note deleted!" };
   }
 }
 

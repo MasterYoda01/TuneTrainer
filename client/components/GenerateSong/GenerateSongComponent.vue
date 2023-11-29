@@ -19,7 +19,7 @@ const submitNotes = async () => {
     let query = { rawNote, lyricsTemplate };
 
     const response = await fetchy(`/api/generate/songifiednote`, "POST", { query });
-    apiResponse.value = response.lyrics;
+    apiResponse.value = response.songifiednote.generatedLyrics;
   } catch (error) {
     console.error("Error submitting notes:", error);
     errorMessage.value = "Failed to submit notes. Please try again.";
