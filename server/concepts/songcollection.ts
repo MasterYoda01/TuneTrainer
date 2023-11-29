@@ -3,17 +3,12 @@ import { Filter, ObjectId } from "mongodb";
 import DocCollection, { BaseDoc } from "../framework/doc";
 import { NotAllowedError, NotFoundError } from "./errors";
 
-// export interface PostOptions {
-//   backgroundColor?: string;
-// }
-
 export interface SongCollectionDoc extends BaseDoc {
   title: string;
   description: string;
   songifiedNotes: ObjectId[];
   owner: ObjectId;
   upvotes: string;
-  //   options?: PostOptions;
 }
 
 export default class SongCollectionConcept {
@@ -42,34 +37,42 @@ export default class SongCollectionConcept {
     return { msg: "Post successfully updated!" };
   }
 
+  async addNote(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
+    const collection = await this.songCollections.readOne({ collection_id });
+    const addedSong = collection?.songifiedNotes.concat([songifiedNote]);
+    update.songifiedNotes = addedSong;
+    await this.songCollections.updateOne(collection_id, update);
+  }
+
   async deleteCollection(_id: ObjectId) {
     await this.songCollections.deleteOne({ _id });
     return { msg: "Post deleted successfully!" };
   }
-  async deleteNote(query: Filter<SongCollectionDoc>, update: Partial<SongCollectionDoc>) {
-    //Remove a single SongifiedNote from the SongCollection.
-    await this.songCollections.updateOne(query, update);
-    return { msg: "Song successfully deleted from collection!" };
-    // return songCollections;
-  }
 
-  async deleteNotes(query: Filter<SongCollectionDoc>, update: Partial<SongCollectionDoc>) {
-    //Remove a single SongifiedNote from the SongCollection.
-    await this.songCollections.updateMany(query, update);
-    return { msg: "Song successfully deleted from all collections!" };
-    // return songCollections;
-  }
-
-  async deleteNoteFromCollection(songCollection: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
-    // const collection = await this.songCollections.readOne({ songCollection });
-    // for (const song of collection?.songifiedNotes){
-    //     if (song)
-    // }
-    return await this.deleteNote({ $pull: { songCollection: { $in: songifiedNote } } }, update);
+  async deleteNoteFromCollection(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
+    const songNotes = await this.songCollections.readOne({ collection_id });
+    const songs = songNotes?.songifiedNotes;
+    const index = songs?.indexOf(songifiedNote);
+    if (index !== undefined) {
+      songs?.splice(index, 1);
+      update.songifiedNotes = songs;
+      await this.songCollections.updateOne({ collection_id }, update);
+    }
+    return { msg: "collection successfully updated!" };
   }
 
   async deleteNoteFromAllCollections(songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
-    return await this.deleteNotes({ $pull: { songCollection: { $in: songifiedNote } } }, update);
+    const songcollection = await this.songCollections.readMany({});
+    for (const songdoc of songcollection) {
+      const currSongs = songdoc.songifiedNotes;
+      const index = currSongs.indexOf(songifiedNote);
+      if (index !== -1) {
+        currSongs.splice(index, 1);
+        update.songifiedNotes = currSongs;
+        await this.songCollections.updateOne(currSongs, update);
+      }
+    }
+    return { msg: "collections successfully updated!" };
   }
 
   async updateUpvote(songCollection: ObjectId) {
@@ -83,13 +86,8 @@ export default class SongCollectionConcept {
     }
   }
 
-  async upvote(query: Filter<SongCollectionDoc>, update: Partial<SongCollectionDoc>) {
-    const posts = await this.songCollections.updateOne(query, update);
-    return posts;
-  }
-
   async doUpvote(songCollection: ObjectId) {
-    return await this.upvote({ songCollection }, { upvotes: await this.updateUpvote(songCollection) });
+    return await this.songCollections.updateOne({ songCollection }, { upvotes: await this.updateUpvote(songCollection) });
   }
 
   async isOwner(user: ObjectId, _id: ObjectId) {
