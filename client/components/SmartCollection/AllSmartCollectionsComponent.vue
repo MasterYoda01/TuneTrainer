@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from "vue";
 
-import { fetchy } from "../../utils/fetchy";
-
 interface SmartCollection {
   _id: string;
   collectionName: string;
@@ -12,15 +10,9 @@ interface SmartCollection {
 }
 const allSmartCollections = ref<SmartCollection[]>([]);
 
-async function getAllSmartCollections() {
-  const smartcollections = await fetchy("/api/smartcollections/all", "GET", {});
-  allSmartCollections.value = smartcollections;
-}
-
 const collectionContainer = ref<HTMLElement | null>(null);
 
 onMounted(async () => {
-  await getAllSmartCollections();
   await nextTick(); // Wait until the DOM updates
 
   const blocks = collectionContainer.value?.querySelectorAll(".smart-collection-block");
