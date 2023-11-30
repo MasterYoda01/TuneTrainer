@@ -54,35 +54,60 @@ onMounted(async () => {
 
 <template>
   <div>
-    <h3>My Collections</h3>
+    <h3>My Collections:</h3>
     <div class="collections-container">
-      <div v-for="collection in collections" :key="collection._id" class="collection-block">
-        <h5>{{ collection.title }}</h5>
-        <p>{{ collection.description }}</p>
-        <p>Number of Songs: {{ collection.songifiedNotes.length }}</p>
-      </div>
+      <RouterLink v-for="collection in collections" style="text-decoration: none;" 
+      :to="{name: 'SmartCollection', params: {id: collection._id}}">
+        <div :key="collection._id" class="collection-block">
+          <span class="title">{{ collection.title }}</span>  
+          {{ collection.songifiedNotes.length }} Songs
+          <p/>
+          <span class="description">{{ collection.description }}</span>
+          
+        </div>
+      </RouterLink>
     </div>
   </div>
 </template>
 
 <style scoped>
+h3{
+  font-family: 'Arial';
+  font-weight: 600;
+  text-transform: uppercase;
+}
 .smart-collection-container {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
 }
 
+.title{
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  color: #5CB48C;
+}
+.description{
+  color: #999;
+}
 .collections-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+  column-count: 3;
+  column-gap: 2em;
+  margin: 5px 0;
+  flex-wrap: nowrap;
 }
 
+.collections-container .collection-block{
+  break-inside: avoid-column;
+}
 .collection-block {
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin: 5px;
-  width: 250px; /* Adjust width as needed */
+  border: 1px solid #999;
+  color: #000;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 4% 5%;
+  flex-wrap: wrap;
 }
 
 .collection-block:hover {
