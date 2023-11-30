@@ -3,16 +3,19 @@ import GenerateSongDashboard from "@/components/GenerateSong/GenerateSongDashboa
 </script>
 
 <template>
-  <main>
-    <h3 class="global-title">Generate Song</h3>
-    <section class="global-page-layout">
-      <GenerateSongDashboard />
-    </section>
+  <main class="container">
+    <h2 class="major-labels">Generate Song</h2>
+    <GenerateSongDashboard />
   </main>
+  
 </template>
 
 <style scoped>
 h1 {
   text-align: center;
+}
+
+.major-labels{
+  margin-bottom: 2%;
 }
 </style>

@@ -30,10 +30,10 @@ const submitNotes = async () => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="column-container">
     <div class="notes-container">
       <textarea v-model="userNotes" placeholder="Enter your notes here..." rows="10" class="notes-textarea"></textarea>
-      <button class="submit-button" @click="submitNotes">Submit Notes</button>
+      <button type="submit" class="submit-button" @click="submitNotes">Submit Notes</button>
       <span class="error-message">{{ errorMessage }}</span>
     </div>
     <div class="response-container">
@@ -44,7 +44,7 @@ const submitNotes = async () => {
 </template>
 
 <style scoped>
-.container {
+.column-container {
   display: flex;
   width: 100%;
   gap: 15px;
@@ -53,7 +53,7 @@ const submitNotes = async () => {
 .notes-container,
 .response-container {
   flex: 1;
-  padding: 16px;
+  padding: 2% 2.5%;
   border-radius: 4px;
   margin: 0 auto;
   background-color: white;
@@ -63,9 +63,9 @@ const submitNotes = async () => {
 .notes-textarea {
   width: 100%;
   padding: 8px;
-  border: 0.3px solid lightgray;
-  border-radius: 4px;
-  margin-bottom: 16px;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  margin-bottom: 5px;
   resize: vertical;
 }
 
