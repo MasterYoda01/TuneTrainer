@@ -8,16 +8,19 @@ export interface SongCollectionDoc extends BaseDoc {
   description: string;
   songifiedNotes: ObjectId[];
   owner: ObjectId;
-  upvotes: string;
+  upvotes: number;
 }
 
 export default class SongCollectionConcept {
   public readonly songCollections = new DocCollection<SongCollectionDoc>("songCollections");
 
-  async create(owner: ObjectId, title: string, description: string, id: string) {
-    const upvotes = "0";
-    const songifiedNotes = new ObjectId(id);
-    const _id = await this.songCollections.createOne({ title, description, Array.from(songifiedNotes), owner, upvotes });
+  async create(owner: ObjectId, title: string, description: string) {
+    const _id = await this.songCollections.createOne({
+      title: title,
+      description: description,
+      songifiedNotes: [],
+      upvotes: 0,
+    });
     return { msg: "Song Collection successfully created!", songCollection: await this.songCollections.readOne({ _id }) };
   }
 
@@ -38,14 +41,22 @@ export default class SongCollectionConcept {
     return { msg: "Collection successfully updated!" };
   }
 
-  async addNote(collection_id: string, songifiedNote: string, update: Partial<SongCollectionDoc>) {
+  async addNote(collection_id: string, songifiedNoteToAdd: string) {
     const collection = await this.songCollections.readOne(new ObjectId(collection_id));
+    if (!collection) {
+      throw new NotFoundError("Collection not found");
+    }
 
-    console.log("here", collection);
-    const addedSong = collection?.songifiedNotes.concat([new ObjectId(songifiedNote)]);
-    update.songifiedNotes = addedSong;
-    const result = await this.songCollections.updateOne(new ObjectId(collection_id), update);
-    console.log("here2", result);
+    const idToAdd = new ObjectId(songifiedNoteToAdd);
+    let updatedSongifiedNotes;
+    if (collection.songifiedNotes) {
+      updatedSongifiedNotes = [...collection.songifiedNotes, idToAdd];
+    } else {
+      updatedSongifiedNotes = [idToAdd];
+    }
+
+    await this.songCollections.updateOne({ _id: new ObjectId(collection_id) }, { songifiedNotes: updatedSongifiedNotes });
+    return { msg: "Note added to collection successfully!" };
   }
 
   async deleteCollection(_id: ObjectId) {
@@ -53,56 +64,56 @@ export default class SongCollectionConcept {
     return { msg: "Collection deleted successfully!" };
   }
 
-  async deleteNoteFromCollection(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
-    const songNotes = await this.songCollections.readOne({ collection_id });
-    const songs = songNotes?.songifiedNotes;
-    const index = songs?.indexOf(songifiedNote);
-    if (index !== undefined) {
-      songs?.splice(index, 1);
-      update.songifiedNotes = songs;
-      await this.songCollections.updateOne({ collection_id }, update);
-    }
-    return { msg: "collection successfully updated!" };
-  }
+  // async deleteNoteFromCollection(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
+  //   const songNotes = await this.songCollections.readOne({ collection_id });
+  //   const songs = songNotes?.songifiedNotes;
+  //   const index = songs?.indexOf(songifiedNote);
+  //   if (index !== undefined) {
+  //     songs?.splice(index, 1);
+  //     update.songifiedNotes = songs;
+  //     await this.songCollections.updateOne({ collection_id }, update);
+  //   }
+  //   return { msg: "collection successfully updated!" };
+  // }
 
-  async deleteNoteFromAllCollections(songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
-    const songcollection = await this.songCollections.readMany({});
-    for (const songdoc of songcollection) {
-      const currSongs = songdoc.songifiedNotes;
-      const index = currSongs.indexOf(songifiedNote);
-      if (index !== -1) {
-        currSongs.splice(index, 1);
-        update.songifiedNotes = currSongs;
-        await this.songCollections.updateOne(currSongs, update);
-      }
-    }
-    return { msg: "collections successfully updated!" };
-  }
+  // async deleteNoteFromAllCollections(songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
+  //   const songcollection = await this.songCollections.readMany({});
+  //   for (const songdoc of songcollection) {
+  //     const currSongs = songdoc.songifiedNotes;
+  //     const index = currSongs.indexOf(songifiedNote);
+  //     if (index !== -1) {
+  //       currSongs.splice(index, 1);
+  //       update.songifiedNotes = currSongs;
+  //       await this.songCollections.updateOne(currSongs, update);
+  //     }
+  //   }
+  //   return { msg: "collections successfully updated!" };
+  // }
 
-  async updateUpvote(songCollection: ObjectId) {
-    const collection = await this.songCollections.readOne({ songCollection });
-    if (collection !== null) {
-      const upvote = collection.upvotes.toString();
-      const num = parseInt(upvote);
-      const plusone = num + 1;
-      const updatedUpvotes = plusone.toString();
-      return updatedUpvotes;
-    }
-  }
+  // async updateUpvote(songCollection: ObjectId) {
+  //   const collection = await this.songCollections.readOne({ songCollection });
+  //   if (collection !== null) {
+  //     const upvote = collection.upvotes.toString();
+  //     const num = parseInt(upvote);
+  //     const plusone = num + 1;
+  //     const updatedUpvotes = plusone.toString();
+  //     return updatedUpvotes;
+  //   }
+  // }
 
-  async doUpvote(songCollection: ObjectId) {
-    return await this.songCollections.updateOne({ songCollection }, { upvotes: await this.updateUpvote(songCollection) });
-  }
+  // async doUpvote(songCollection: ObjectId) {
+  //   return await this.songCollections.updateOne({ songCollection }, { upvotes: await this.updateUpvote(songCollection) });
+  // }
 
-  async isOwner(user: ObjectId, _id: ObjectId) {
-    const songCollection = await this.songCollections.readOne({ _id });
-    if (!songCollection) {
-      throw new NotFoundError(`Collection ${_id} does not exist!`);
-    }
-    if (songCollection.owner.toString() !== user.toString()) {
-      throw new CollectionAuthorNotMatchError(user, _id);
-    }
-  }
+  // async isOwner(user: ObjectId, _id: ObjectId) {
+  //   const songCollection = await this.songCollections.readOne({ _id });
+  //   if (!songCollection) {
+  //     throw new NotFoundError(`Collection ${_id} does not exist!`);
+  //   }
+  //   if (songCollection.owner.toString() !== user.toString()) {
+  //     throw new CollectionAuthorNotMatchError(user, _id);
+  //   }
+  // }
 
   private sanitizeUpdate(update: Partial<SongCollectionDoc>) {
     // Make sure the update cannot change the author.
