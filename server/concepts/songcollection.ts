@@ -42,9 +42,10 @@ export default class SongCollectionConcept {
     return songCollections;
   }
 
-  async update(_id: ObjectId, update: Partial<SongCollectionDoc>) {
+  async updateNote(_id: string, update: Partial<SongCollectionDoc>) {
     this.sanitizeUpdate(update);
-    await this.songCollections.updateOne({ _id }, update);
+    const id = new ObjectId(_id);
+    await this.songCollections.updateOne({ _id: id }, update);
     return { msg: "Collection successfully updated!" };
   }
 
