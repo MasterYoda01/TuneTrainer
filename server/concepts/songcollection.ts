@@ -32,6 +32,14 @@ export default class SongCollectionConcept {
     return songCollections;
   }
 
+  async getCollectionById(_id: ObjectId) {
+    const doc = await this.songCollections.readOne({ _id });
+    if (doc === null) {
+      throw new NotFoundError(`Collection does not exist!`);
+    }
+    return doc;
+  }
+
   async getByAuthor(owner: ObjectId) {
     const songCollections = await this.songCollections.readMany(
       { owner: owner },
