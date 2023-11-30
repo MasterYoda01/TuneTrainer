@@ -1,6 +1,7 @@
 import { Router, getExpressRouter } from "./framework/router";
 
 import { SongCollection, SongifiedNote, User, WebSession } from "./app";
+import { SongCollectionDoc } from "./concepts/songcollection";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
 import Responses from "./responses";
@@ -121,12 +122,10 @@ class Routes {
     return await SongCollection.addNote(collection_id, songifiedNoteToAdd);
   }
 
-  // @Router.patch("/collections/:_id")
-  // async updateCollection(session: WebSessionDoc, _id: ObjectId, update: Partial<PostDoc>) {
-  //   const user = WebSession.getUser(session);
-  //   await SongCollection.isOwner(user, _id);
-  //   return await SongCollection.update(_id, update);
-  // }
+  @Router.patch("/collections/:_id")
+  async updateCollection(collection_id: string, update: Partial<SongCollectionDoc>) {
+    return await SongCollection.updateNote(collection_id, update);
+  }
 
   // @Router.delete("/collections/:_id")
   // async deleteCollection(session: WebSessionDoc, _id: ObjectId) {
