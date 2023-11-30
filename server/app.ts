@@ -1,3 +1,4 @@
+import AccessControl from "./concepts/access_control";
 import FriendConcept from "./concepts/friend";
 import PostConcept from "./concepts/post";
 import SongCollectionConcept from "./concepts/songcollection";
@@ -12,3 +13,4 @@ export const Post = new PostConcept();
 export const Friend = new FriendConcept();
 export const SongCollection = new SongCollectionConcept();
 export const SongifiedNote = new SongifiedNoteConcept();
+export const CollectionAccessControl = new AccessControl("collection");
