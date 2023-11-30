@@ -107,8 +107,14 @@ const finalSave = async () => {
     console.log(noteID.value, chosenCollection.value._id);
     loading.value = true;
 
+    //add to chosen collection
     let query = { collection_id: chosenCollection.value._id, songifiedNoteToAdd: noteID.value };
     await fetchy("/api/collection/add/", "PATCH", { query });
+
+    //change song lyrics to what's been edited
+    let query2 = { _id: noteID.value, newLyrics: editedLyrics.value };
+    await fetchy("/api/edit/generatedlyrics/songifiednote", "PATCH", { query: query2 });
+
     void router.push({ name: "Collections" });
   } else {
     alert("Must choose collection to add to first");
