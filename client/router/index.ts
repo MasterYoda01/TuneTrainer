@@ -26,7 +26,7 @@ const router = createRouter({
       meta: { requiresAuth: true, breadcrumb: "GenerateSong" },
     },
     {
-      path: "/collections",
+      path: "/collections/user=:user",
       name: "Collections",
       component: SmartCollectionsView,
       meta: { requiresAuth: true, breadcrumb: "Collections" },
