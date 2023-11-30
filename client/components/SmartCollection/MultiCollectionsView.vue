@@ -18,10 +18,6 @@ interface SongCollectionDoc {
   upvotes: number;
 }
 
-const userCollections = ref<SongCollectionDoc[]>([]);
-//PROMI -- use this function to make add new collection feature
-
-
 // we will need this later in the code where a single collection is rendered
 async function addSongToCollection() {
   try {
