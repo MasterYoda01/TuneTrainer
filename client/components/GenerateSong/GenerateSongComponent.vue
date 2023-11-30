@@ -53,7 +53,7 @@ const submitNotes = async () => {
 .notes-container,
 .response-container {
   flex: 1;
-  padding: 16px;
+  padding: 2% 2.5%;
   border-radius: 4px;
   margin: 0 auto;
   background-color: white;
@@ -63,9 +63,9 @@ const submitNotes = async () => {
 .notes-textarea {
   width: 100%;
   padding: 8px;
-  border: 0.3px solid lightgray;
-  border-radius: 4px;
-  margin-bottom: 16px;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  margin-bottom: 5px;
   resize: vertical;
 }
 

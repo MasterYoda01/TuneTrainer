@@ -46,7 +46,12 @@ const showRegister = ref(false);
   font-weight: 550;
   border-radius: 5px;
   margin: 0 -5em;
-  font-family: 'Righteous', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  font-size: 15px;
+  background-color: #f0f2f5;
+  
 }
 .switch:hover{
   background-color: #5CB48C;
@@ -82,8 +87,6 @@ const showRegister = ref(false);
   color: black;
   /* padding: 14px 20px; */
   margin: 8px 0;
-  border: 1px solid black;
-  border-color: black;
   font-weight: 550;
   border-radius: 5px;
 }
