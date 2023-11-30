@@ -14,9 +14,10 @@ export interface SongCollectionDoc extends BaseDoc {
 export default class SongCollectionConcept {
   public readonly songCollections = new DocCollection<SongCollectionDoc>("songCollections");
 
-  async create(owner: ObjectId, title: string, description: string, songifiedNotes: ObjectId[]) {
+  async create(owner: ObjectId, title: string, description: string, id: string) {
     const upvotes = "0";
-    const _id = await this.songCollections.createOne({ title, owner, description, songifiedNotes, upvotes });
+    const songifiedNotes = new ObjectId(id);
+    const _id = await this.songCollections.createOne({ title, description, Array.from(songifiedNotes), owner, upvotes });
     return { msg: "Song Collection successfully created!", songCollection: await this.songCollections.readOne({ _id }) };
   }
 
@@ -34,19 +35,22 @@ export default class SongCollectionConcept {
   async update(_id: ObjectId, update: Partial<SongCollectionDoc>) {
     this.sanitizeUpdate(update);
     await this.songCollections.updateOne({ _id }, update);
-    return { msg: "Post successfully updated!" };
+    return { msg: "Collection successfully updated!" };
   }
 
-  async addNote(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
-    const collection = await this.songCollections.readOne({ collection_id });
-    const addedSong = collection?.songifiedNotes.concat([songifiedNote]);
+  async addNote(collection_id: string, songifiedNote: string, update: Partial<SongCollectionDoc>) {
+    const collection = await this.songCollections.readOne(new ObjectId(collection_id));
+
+    console.log("here", collection);
+    const addedSong = collection?.songifiedNotes.concat([new ObjectId(songifiedNote)]);
     update.songifiedNotes = addedSong;
-    await this.songCollections.updateOne(collection_id, update);
+    const result = await this.songCollections.updateOne(new ObjectId(collection_id), update);
+    console.log("here2", result);
   }
 
   async deleteCollection(_id: ObjectId) {
     await this.songCollections.deleteOne({ _id });
-    return { msg: "Post deleted successfully!" };
+    return { msg: "Collection deleted successfully!" };
   }
 
   async deleteNoteFromCollection(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
@@ -102,7 +106,7 @@ export default class SongCollectionConcept {
 
   private sanitizeUpdate(update: Partial<SongCollectionDoc>) {
     // Make sure the update cannot change the author.
-    const allowedUpdates = ["content", "options"];
+    const allowedUpdates = ["content", "options", "title", "description", "songifiedNotes", "songifiednote"];
     for (const key in update) {
       if (!allowedUpdates.includes(key)) {
         throw new NotAllowedError(`Cannot update '${key}' field!`);

@@ -113,7 +113,7 @@ class Routes {
   }
 
   @Router.post("/collections")
-  async createCollection(session: WebSessionDoc, title: string, description: string, songifiedNotes: ObjectId[]) {
+  async createCollection(session: WebSessionDoc, title: string, description: string, songifiedNotes: string) {
     const user = WebSession.getUser(session);
     const created = await SongCollection.create(user, title, description, songifiedNotes);
     return { msg: created.msg, collection: await Responses.collection(created.songCollection) };
@@ -134,7 +134,7 @@ class Routes {
   }
 
   @Router.patch("/collections/add/:songifiedNote")
-  async addNote(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
+  async addNote(collection_id: string, songifiedNote: string, update: Partial<SongCollectionDoc>) {
     // const user = WebSession.getUser(session);
     return await SongCollection.addNote(collection_id, songifiedNote, update);
   }
