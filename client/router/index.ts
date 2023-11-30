@@ -32,7 +32,7 @@ const router = createRouter({
       meta: { requiresAuth: true, breadcrumb: "Collections" },
     },
     {
-      path: "/smartcollection/:collectionname",
+      path: "/smartcollection/id=:id",
       name: "SmartCollection",
       component: SingleSmartCollectionView,
       meta: { requiresAuth: true, breadcrumb: "SmartCollection" },
