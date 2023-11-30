@@ -1,6 +1,7 @@
 import { User } from "./app";
 import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError } from "./concepts/friend";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/post";
+import { SongCollectionDoc } from "./concepts/songcollection";
 import { Router } from "./framework/router";
 
 /**
@@ -25,6 +26,25 @@ export default class Responses {
   static async posts(posts: PostDoc[]) {
     const authors = await User.idsToUsernames(posts.map((post) => post.author));
     return posts.map((post, i) => ({ ...post, author: authors[i] }));
+  }
+
+  /**
+   * Convert SongCollectionDoc into more readable format for the frontend by converting the author id into a username.
+   */
+  static async collection(collection: SongCollectionDoc | null) {
+    if (!collection) {
+      return collection;
+    }
+    const author = await User.getUserById(collection.owner);
+    return { ...collection, author: author.username };
+  }
+
+  /**
+   * Same as {@link collection} but for an array of SongCollectionDoc for improved performance.
+   */
+  static async collections(collections: SongCollectionDoc[]) {
+    const authors = await User.idsToUsernames(collections.map((collection) => collection.owner));
+    return collections.map((collection, i) => ({ ...collection, author: authors[i] }));
   }
 
   /**
