@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
+import { fetchy } from "../../utils/fetchy";
 const userStore = useUserStore();
 const { currentUsername } = storeToRefs(userStore);
 
@@ -45,6 +46,21 @@ const submitNotes = async () => {
   //   loading.value = false;
   // }
 };
+
+//PROMI -- this function gets all the user's collections
+const getUsersCollections = async () => {
+  try {
+    const response = await fetchy(`/api/collections/${currentUsername.value}`, "GET", {});
+    console.log(response);
+    userCollections.value = response;
+  } catch (error) {
+    console.error("Error getting collection notes:", error);
+  }
+};
+
+onMounted(async () => {
+  await getUsersCollections();
+});
 
 const changeTemplate = async () => {
   chosenTemplate.value = lyricsTemplate;
