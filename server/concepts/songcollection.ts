@@ -19,6 +19,7 @@ export default class SongCollectionConcept {
       title: title,
       description: description,
       songifiedNotes: [],
+      owner: owner,
       upvotes: 0,
     });
     return { msg: "Song Collection successfully created!", songCollection: await this.songCollections.readOne({ _id }) };
@@ -32,7 +33,13 @@ export default class SongCollectionConcept {
   }
 
   async getByAuthor(owner: ObjectId) {
-    return await this.getCollection({ owner });
+    const songCollections = await this.songCollections.readMany(
+      { owner: owner },
+      {
+        sort: { dateUpdated: -1 },
+      },
+    );
+    return songCollections;
   }
 
   async update(_id: ObjectId, update: Partial<SongCollectionDoc>) {
