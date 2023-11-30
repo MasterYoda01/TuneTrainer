@@ -1,9 +1,6 @@
-import { ObjectId } from "mongodb";
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Friend, Post, SongCollection, SongifiedNote, User, WebSession } from "./app";
-import { PostDoc } from "./concepts/post";
-import { SongCollectionDoc } from "./concepts/songcollection";
+import { SongCollection, SongifiedNote, User, WebSession } from "./app";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
 import Responses from "./responses";
@@ -98,91 +95,63 @@ class Routes {
     return { msg: "Songified note deleted!" };
   }
 
-  // where collection starts
+  // COLLECTIONS CONCEPT
 
-  @Router.get("/collections")
-  async getCollection(owner?: string) {
+  @Router.get("/collections/:username")
+  async getCollection(username: string) {
     let collection;
-    if (owner) {
-      const id = (await User.getUserByUsername(owner))._id;
+    if (username) {
+      const id = (await User.getUserByUsername(username))._id;
       collection = await SongCollection.getByAuthor(id);
     } else {
-      collection = await SongCollection.getCollection({});
+      return { msg: "No owner" };
     }
     return Responses.collections(collection);
   }
 
-  @Router.post("/collections")
-  async createCollection(session: WebSessionDoc, title: string, description: string, songifiedNotes: string) {
+  // generate songified note concept
+  @Router.post("/create/collection/")
+  async createCollection(session: WebSessionDoc, title: string, description: string) {
     const user = WebSession.getUser(session);
-    const created = await SongCollection.create(user, title, description, songifiedNotes);
-    return { msg: created.msg, collection: await Responses.collection(created.songCollection) };
+    return await SongCollection.create(user, title, description);
   }
 
-  @Router.patch("/collections/:_id")
-  async updateCollection(session: WebSessionDoc, _id: ObjectId, update: Partial<PostDoc>) {
-    const user = WebSession.getUser(session);
-    await SongCollection.isOwner(user, _id);
-    return await SongCollection.update(_id, update);
+  @Router.patch("/collection/add/")
+  async addNote(collection_id: string, songifiedNoteToAdd: string) {
+    return await SongCollection.addNote(collection_id, songifiedNoteToAdd);
   }
 
-  @Router.delete("/collections/:_id")
-  async deleteCollection(session: WebSessionDoc, _id: ObjectId) {
-    const user = WebSession.getUser(session);
-    await SongCollection.isOwner(user, _id);
-    return SongCollection.deleteCollection(_id);
-  }
+  // @Router.patch("/collections/:_id")
+  // async updateCollection(session: WebSessionDoc, _id: ObjectId, update: Partial<PostDoc>) {
+  //   const user = WebSession.getUser(session);
+  //   await SongCollection.isOwner(user, _id);
+  //   return await SongCollection.update(_id, update);
+  // }
 
-  @Router.patch("/collections/add/:songifiedNote")
-  async addNote(collection_id: string, songifiedNote: string, update: Partial<SongCollectionDoc>) {
-    // const user = WebSession.getUser(session);
-    return await SongCollection.addNote(collection_id, songifiedNote, update);
-  }
+  // @Router.delete("/collections/:_id")
+  // async deleteCollection(session: WebSessionDoc, _id: ObjectId) {
+  //   const user = WebSession.getUser(session);
+  //   await SongCollection.isOwner(user, _id);
+  //   return SongCollection.deleteCollection(_id);
+  // }
 
-  @Router.patch("/collections/remove/one/:songifiedNote")
-  async deleteNoteFromCollection(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
-    // const user = WebSession.getUser(session);
-    return await SongCollection.deleteNoteFromCollection(collection_id, songifiedNote, update);
-  }
+  // @Router.patch("/collections/remove/one/:songifiedNote")
+  // async deleteNoteFromCollection(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
+  //   // const user = WebSession.getUser(session);
+  //   return await SongCollection.deleteNoteFromCollection(collection_id, songifiedNote, update);
+  // }
 
-  @Router.patch("/collections/remove/all/:songifiedNote")
-  async deleteNoteFromAllCollection(songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
-    // const user = WebSession.getUser(session);
-    return await SongCollection.deleteNoteFromAllCollections(songifiedNote, update);
-  }
+  // @Router.patch("/collections/remove/all/:songifiedNote")
+  // async deleteNoteFromAllCollection(songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
+  //   // const user = WebSession.getUser(session);
+  //   return await SongCollection.deleteNoteFromAllCollections(songifiedNote, update);
+  // }
 
-  @Router.patch("/collections/upvote/:songifiedNote")
-  async upvoteCollection(songifiedNote: ObjectId) {
-    return await SongCollection.doUpvote(songifiedNote);
-  }
+  // @Router.patch("/collections/upvote/:songifiedNote")
+  // async upvoteCollection(songifiedNote: ObjectId) {
+  //   return await SongCollection.doUpvote(songifiedNote);
+  // }
   //where it ends
-
-  @Router.patch("/posts/:_id")
-  async updatePost(session: WebSessionDoc, _id: ObjectId, update: Partial<PostDoc>) {
-    const user = WebSession.getUser(session);
-    await Post.isAuthor(user, _id);
-    return await Post.update(_id, update);
-  }
-
-  @Router.delete("/posts/:_id")
-  async deletePost(session: WebSessionDoc, _id: ObjectId) {
-    const user = WebSession.getUser(session);
-    await Post.isAuthor(user, _id);
-    return Post.delete(_id);
-  }
-
-  @Router.get("/friends")
-  async getFriends(session: WebSessionDoc) {
-    const user = WebSession.getUser(session);
-    return await User.idsToUsernames(await Friend.getFriends(user));
-  }
-
-  @Router.delete("/friends/:friend")
-  async removeFriend(session: WebSessionDoc, friend: string) {
-    const user = WebSession.getUser(session);
-    const friendId = (await User.getUserByUsername(friend))._id;
-    return await Friend.removeFriend(user, friendId);
-  }
 
   @Router.patch("/edit/rawnote/songifiednote")
   async editRawNote(_id: string, newRawNote: string) {
