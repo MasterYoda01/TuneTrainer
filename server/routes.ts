@@ -4,6 +4,7 @@ import { SongCollection, SongifiedNote, User, WebSession } from "./app";
 import { SongCollectionDoc } from "./concepts/songcollection";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
+import { parseInputAsObjectId } from "./parser";
 import Responses from "./responses";
 
 class Routes {
@@ -108,6 +109,12 @@ class Routes {
       return { msg: "No owner" };
     }
     return Responses.collections(collection);
+  }
+
+  @Router.get("/collections/:id")
+  async getCollectionById(id: string) {
+    const parsedId = parseInputAsObjectId(id);
+    return await SongCollection.getCollectionById(parsedId);
   }
 
   // generate songified note concept
