@@ -99,7 +99,7 @@ class Routes {
   // COLLECTIONS CONCEPT
 
   @Router.get("/collections/:username")
-  async getCollection(username: string) {
+  async getCollectionByOwner(username: string) {
     let collection;
     if (username) {
       const id = (await User.getUserByUsername(username))._id;
@@ -167,7 +167,13 @@ class Routes {
   @Router.get("/songifiednotes/author/:authorId")
   async getSongifiedNotesByAuthor(authorId: string) {
     const songNote = await SongifiedNote.getSongifiedNotesByAuthor(authorId);
-    return { msg: "Raw note updated!", songNote: songNote };
+    return { msg: "Got Songified Notes by Author!", songNote: songNote };
+  }
+
+  @Router.get("/songifiednotes/author/:songId")
+  async getSongifiedNotesBySongId(songId: string) {
+    const songNote = await SongifiedNote.getSongifiedNoteBySongId(songId);
+    return { msg: "Got Songified Note by _id!", songNote: songNote };
   }
 }
 
