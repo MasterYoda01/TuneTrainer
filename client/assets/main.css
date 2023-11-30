@@ -30,7 +30,10 @@ button[type="submit"] {
   padding: 14px 20px;
   margin: 8px 0;
   border-radius: 5px;
-  font-family: 'Righteous', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  font-size: 15px;
 }
 button{
   
@@ -43,7 +46,6 @@ button:hover {
 a.button {
   color: #212529;
   background-color: #f1f3f5;
-  border: 1px solid #dee2e6;
   border-radius: 0.25em;
   padding: 0.375em 0.75em;
   text-decoration: none;
