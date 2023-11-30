@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from "vue";
 
+import router from "@/router";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { fetchy } from "../../utils/fetchy";
@@ -98,7 +99,12 @@ const deleteNote = async() => {
 
 const finalSave = async() => {
   if(chosenCollection.value){
+    console.log(noteID.value, chosenCollection.value._id); 
+    loading.value = true;
 
+    let query = { collection_id: chosenCollection.value._id, songifiedNoteToAdd: noteID.value }; 
+    await fetchy("/api/collection/add/", "PATCH", { query });
+    void router.push({ name: 'Collections' })
   } else{
     alert("Must choose collection to add to first"); 
   }
