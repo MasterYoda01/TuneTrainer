@@ -1,11 +1,27 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
+
+import { useUserStore } from "@/stores/user";
+import { storeToRefs } from "pinia";
+const userStore = useUserStore();
+const { currentUsername } = storeToRefs(userStore);
 
 const userNotes = ref("");
 const apiResponse = ref("");
 const errorMessage = ref("");
 const loading = ref(false);
+interface SongCollectionDoc {
+  _id: string;
+  title: string;
+  description: string;
+  songifiedNotes: string[]; // Replace with the correct type if not string
+  owner: string; // Replace with the correct type if not string
+  upvotes: number;
+}
+
+const userCollections = ref<SongCollectionDoc[]>([]);
+
 const lyricsTemplate =
   "Song - Ed Sheeran. Shape of You. The club isnt the best place to find a lover So the bar is where I go Me and my friends at the table doing shots Drinking fast and then we talk slow Come over and start up a conversation with just me And trust me I ll give it a chance now Take my hand, stop, put Van the Man on the jukebox And then we start to dance, and now I m singing like Girl, you know I want your love Your love was handmade for somebody like me Come on now, follow my lead I may be crazy, don t mind me Say, boy, let s not talk too much Grab on my waist and put that body on me Come on now, follow my lead Come, come on now, follow my leadl";
 
@@ -27,6 +43,21 @@ const submitNotes = async () => {
     loading.value = false;
   }
 };
+
+//PROMI -- this function gets all the user's collections
+const getUsersCollections = async () => {
+  try {
+    const response = await fetchy(`/api/collections/${currentUsername.value}`, "GET", {});
+    console.log(response);
+    userCollections.value = response;
+  } catch (error) {
+    console.error("Error getting collection notes:", error);
+  }
+};
+
+onMounted(async () => {
+  await getUsersCollections();
+});
 </script>
 
 <template>
@@ -39,6 +70,12 @@ const submitNotes = async () => {
     <div class="response-container">
       <div v-if="loading" class="loading-message">Generating the song...</div>
       <p class="response-text">{{ apiResponse }}</p>
+
+      <select v-if="userCollections.length" class="collections-selector">
+        <option v-for="collection in userCollections" :key="collection._id" :value="collection._id">
+          {{ collection?.title }}
+        </option>
+      </select>
     </div>
   </div>
 </template>
@@ -48,6 +85,13 @@ const submitNotes = async () => {
   display: flex;
   width: 100%;
   gap: 15px;
+}
+
+.collections-selector {
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid lightgray;
 }
 
 .notes-container,
