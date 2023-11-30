@@ -8,7 +8,7 @@ import { RouterView, useRoute } from "vue-router";
 const currentRoute = useRoute();
 const currentRouteName = computed(() => currentRoute.name);
 const userStore = useUserStore();
-const { isLoggedIn } = storeToRefs(userStore);
+const { isLoggedIn, currentUsername } = storeToRefs(userStore);
 const { toast } = storeToRefs(useToastStore());
 
 onBeforeMount(async () => {
@@ -26,7 +26,7 @@ onBeforeMount(async () => {
       <nav>
         <div class="nav-buttons">
           <!-- <p @click="$router.push({ name: 'Feed' })" :class="{ active: currentRouteName == 'Feed' }">SmartFeed</p> -->
-          <p @click="$router.push({ name: 'Collections' })" :class="{ active: currentRouteName == 'Collections' }">Collections</p>
+          <p @click="$router.push({ name: 'Collections', params: { user: currentUsername} })" :class="{ active: currentRouteName == 'Collections' }">Collections</p>
           <p @click="$router.push({ name: 'GenerateSong' })" :class="{ active: currentRouteName == 'GenerateSong' }">Generate Song</p>
           <p @click="$router.push({ name: 'Settings' })" :class="{ active: currentRouteName == 'Settings' }">Settings</p>
         </div>

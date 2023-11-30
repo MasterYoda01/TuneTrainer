@@ -158,6 +158,12 @@ class Routes {
     return { msg: "Raw note updated!" };
   }
 
+  @Router.patch("/edit/generatedlyrics/songifiednote")
+  async editGeneratedLyrics(_id: string, newLyrics: string) {
+    await SongifiedNote.editGeneratedLyrics(_id, newLyrics);
+    return { msg: "Raw note updated!" };
+  }
+
   @Router.get("/songifiednotes/author/:authorId")
   async getSongifiedNotesByAuthor(authorId: string) {
     const songNote = await SongifiedNote.getSongifiedNotesByAuthor(authorId);
