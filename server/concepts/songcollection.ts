@@ -55,6 +55,15 @@ export default class SongCollectionConcept {
     return songCollections;
   }
 
+  async getCollectionById(_id: string) {
+    const newid = new ObjectId(_id);
+    const doc = await this.songCollections.readOne({ _id: newid });
+    if (doc === null) {
+      throw new NotFoundError(`Collection does not exist!`);
+    }
+    return doc;
+  }
+
   async updateNote(_id: string, update: Partial<SongCollectionDoc>) {
     this.sanitizeUpdate(update);
     const id = new ObjectId(_id);

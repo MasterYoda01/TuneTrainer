@@ -26,13 +26,13 @@ const router = createRouter({
       meta: { requiresAuth: true, breadcrumb: "GenerateSong" },
     },
     {
-      path: "/collections",
+      path: "/collections/user=:user",
       name: "Collections",
       component: SmartCollectionsView,
       meta: { requiresAuth: true, breadcrumb: "Collections" },
     },
     {
-      path: "/smartcollection/:collectionname",
+      path: "/smartcollection/id=:id",
       name: "SmartCollection",
       component: SingleSmartCollectionView,
       meta: { requiresAuth: true, breadcrumb: "SmartCollection" },
