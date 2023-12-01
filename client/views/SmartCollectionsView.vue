@@ -2,7 +2,7 @@
 import AllSmartCollectionsComponent from "@/components/SmartCollection/AllSmartCollectionsComponent.vue";
 import CreateCollectionComponent from "../components/SmartCollection/CreateCollectionComponent.vue";
 // import UserSmartCollectionsComponent from "@/components/SmartCollection/UserSmartCollectionsComponent.vue";
-import MultiCollectionsView from "../components/SmartCollection/MultiCollectionsView.vue";
+import MultiCollectionsComponent from "../components/SmartCollection/MultiCollectionsComponent.vue";
 
 import router from "@/router";
 import { useUserStore } from "@/stores/user";
@@ -36,7 +36,7 @@ onBeforeMount(async () => {
   <main class="container">
     <h3 class="major-labels">Smart <span style="color:#000">Collections</span></h3>
     <CreateCollectionComponent v-if="user == currentUsername"/>
-    <MultiCollectionsView v-if="loaded" :collections="collections"/>
+    <MultiCollectionsComponent v-if="loaded" :collections="collections"/>
     <AllSmartCollectionsComponent />
   </main>
 </template>
