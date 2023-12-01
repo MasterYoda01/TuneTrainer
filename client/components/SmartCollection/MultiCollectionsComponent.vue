@@ -10,8 +10,6 @@ const props = defineProps(["collections"]);
 const collections = props.collections;
 const username = collections[0].owner; 
 
-console.log(collections, "MCC");
-
 const collectionIdParam = ref("");
 const songIdParam = ref("");
 
