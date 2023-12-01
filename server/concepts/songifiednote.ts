@@ -33,4 +33,8 @@ export default class SongifiedNoteConcept {
   async getSongifiedNotesByAuthor(authorId: string) {
     return this.songifiednotes.readMany({ author: new ObjectId(authorId) });
   }
+
+  async getSongifiedNoteBySongId(songId: string) {
+    return this.songifiednotes.readOne({ _id: new ObjectId(songId) });
+  }
 }
