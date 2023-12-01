@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { defineProps, onMounted, ref } from "vue";
 
+import { useUserStore } from "@/stores/user";
+import { storeToRefs } from "pinia";
 import { fetchy } from "../../utils/fetchy";
+
+const { currentUsername } = storeToRefs(useUserStore());
 
 const props = defineProps(["collections"]);
 const collections = props.collections;
@@ -18,9 +22,8 @@ interface SongCollectionDoc {
   upvotes: number;
 }
 
-const userCollections = ref<SongCollectionDoc[]>([]);
+const userCollections = ref("");
 //PROMI -- use this function to make add new collection feature
-
 
 // we will need this later in the code where a single collection is rendered
 async function addSongToCollection() {
@@ -43,12 +46,20 @@ async function addSongToCollection() {
 }
 
 //PROMI -- this function gets all the user's collections
-const getUsersCollections = async () => {
-  
-};
+async function getUsersCollections(username?: string) {
+  let query: Record<string, string> = username !== undefined ? { username } : {};
+  let postResults;
+  try {
+    postResults = await fetchy(`/api/collections/${username}`, "GET", { query });
+  } catch (_) {
+    return;
+  }
+
+  userCollections.value = postResults;
+}
 
 onMounted(async () => {
-  await getUsersCollections();
+  await getUsersCollections(currentUsername.value);
 });
 </script>
 
@@ -56,14 +67,13 @@ onMounted(async () => {
   <div>
     <h3>My Collections:</h3>
     <div class="collections-container">
-      <RouterLink v-for="collection in collections" style="text-decoration: none;" 
-      :to="{name: 'SmartCollection', params: {id: collection._id}}">
+      <RouterLink v-for="collection in collections" :key="collection._id" style="text-decoration: none" :to="{ name: 'SmartCollection', params: { id: collection._id } }">
         <div :key="collection._id" class="collection-block">
-          <span class="title">{{ collection.title }}</span>  
+          <span class="title">{{ collection.title }}</span>
           {{ collection.songifiedNotes.length }} Songs
-          <p/>
-          <span class="description">{{ collection.description }}</span>
-          
+          <p>
+            <span class="description">{{ collection.description }}</span>
+          </p>
         </div>
       </RouterLink>
     </div>
@@ -71,8 +81,8 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-h3{
-  font-family: 'Arial';
+h3 {
+  font-family: "Arial";
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -82,13 +92,13 @@ h3{
   gap: 16px;
 }
 
-.title{
+.title {
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
-  color: #5CB48C;
+  color: #5cb48c;
 }
-.description{
+.description {
   color: #999;
 }
 .collections-container {
@@ -98,7 +108,7 @@ h3{
   flex-wrap: nowrap;
 }
 
-.collections-container .collection-block{
+.collections-container .collection-block {
   break-inside: avoid-column;
 }
 .collection-block {
