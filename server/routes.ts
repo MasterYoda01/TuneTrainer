@@ -110,6 +110,12 @@ class Routes {
     return Responses.collections(collection);
   }
 
+  @Router.get("/collections/:id")
+  async getCollectionById(id: string) {
+    const collection = await SongCollection.getCollectionById(id);
+    return Responses.collection(collection);
+  }
+
   // generate songified note concept
   @Router.post("/create/collection/")
   async createCollection(session: WebSessionDoc, title: string, description: string) {
