@@ -61,6 +61,8 @@ async function getUsersCollections(username?: string) {
 onMounted(async () => {
   await getUsersCollections(currentUsername.value);
 });
+
+async function getCollectionbyId(id?: string);
 </script>
 
 <template>
