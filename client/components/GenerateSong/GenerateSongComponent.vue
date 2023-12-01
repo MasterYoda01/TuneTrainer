@@ -107,14 +107,8 @@ const finalSave = async () => {
     console.log(noteID.value, chosenCollection.value._id);
     loading.value = true;
 
-    //add to chosen collection
     let query = { collection_id: chosenCollection.value._id, songifiedNoteToAdd: noteID.value };
     await fetchy("/api/collection/add/", "PATCH", { query });
-
-    //change song lyrics to what's been edited
-    let query2 = { _id: noteID.value, newLyrics: editedLyrics.value };
-    await fetchy("/api/edit/generatedlyrics/songifiednote", "PATCH", { query: query2 });
-
     void router.push({ name: "Collections" });
   } else {
     alert("Must choose collection to add to first");
@@ -132,7 +126,7 @@ const finalSave = async () => {
         <button class="dropdown">
           {{ chosenSong ? chosenSong : "Choose Tune" }}
           <div class="template-dropdown">
-            <div v-for="temp in templates">
+            <div v-for="temp in templates" :key="temp.lyrics">
               <button class="song-template" @click="changeTemplate(temp.lyrics, temp.title)">
                 {{ temp.title }}
               </button>
@@ -159,7 +153,7 @@ const finalSave = async () => {
           {{ chosenCollection ? chosenCollection.title : "Add to Collection" }}
 
           <div class="template-dropdown">
-            <div v-for="collection in userCollections">
+            <div v-for="collection in userCollections" :key="collection._id">
               <button class="song-template" @click="chosenCollection = collection">
                 {{ collection.title }}
               </button>
