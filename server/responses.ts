@@ -36,7 +36,7 @@ export default class Responses {
       return collection;
     }
     const author = await User.getUserById(collection.owner);
-    return { ...collection, author: author.username };
+    return { ...collection, owner: author.username };
   }
 
   /**
@@ -44,7 +44,7 @@ export default class Responses {
    */
   static async collections(collections: SongCollectionDoc[]) {
     const authors = await User.idsToUsernames(collections.map((collection) => collection.owner));
-    return collections.map((collection, i) => ({ ...collection, author: authors[i] }));
+    return collections.map((collection, i) => ({ ...collection, owner: authors[i] }));
   }
 
   /**
