@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { useUserStore } from "@/stores/user";
+import moment from "moment";
+import { storeToRefs } from "pinia";
+import { defineProps, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { fetchy } from "../../utils/fetchy";
 
-import { useUserStore } from "@/stores/user";
-import { storeToRefs } from "pinia";
 const userStore = useUserStore();
 const { currentUsername } = storeToRefs(userStore);
 const following = ref<string[]>([]);
+
+const props = defineProps(["collection"]);
+const collection = props.collection; 
 
 interface SmartCollection {
   _id: string;
@@ -59,21 +63,21 @@ async function unfollowCollection() {
 }
 
 onMounted(async () => {
-  await getCollection();
-  await getUserFollows();
-  if (smartColl.value) isFollowingCollection.value = following.value.includes(smartColl.value._id);
+  // await getCollection();
+  // await getUserFollows();
+  // if (smartColl.value) isFollowingCollection.value = following.value.includes(smartColl.value._id);
 });
 
-watch(
-  () => route.params.collectionname,
-  async () => {
-    await getCollection();
-  },
-);
+// watch(
+//   () => route.params.collectionname,
+//   async () => {
+//     await getCollection();
+//   },
+// );
 </script>
 
 <template>
-  <div>
+  <!-- <div>
     <div v-if="smartColl" class="smart-collection-block">
       <div class="header">
         <h3>{{ smartColl.collectionTopic }}</h3>
@@ -96,10 +100,48 @@ watch(
         <PostListComponent @refreshPosts="getCollection" :posts="smartCollPosts.slice(0, smartCollPosts.length / 2)" :canEdit="false" />
       </div>
     </div>
-  </div>
+  </div> -->
+  <h2>{{ collection.title}}</h2>
+  <span class="author">By {{ collection.owner }}</span>
+  <span style="float: right;color: #999;">Updated {{ moment(collection.dateUpdated).format("MM/DD/YY") }}</span>
+  <p class="description">{{ collection.description }}</p>
+  <section class="song-notes-container">
+    <div v-for="note in collection.songifiedNotes">
+      <div class="song-note">
+        {{ note }}
+      </div>
+    </div>
+  </section>
 </template>
 
 <style scoped>
+h2{
+  color: #5CB48C;
+  font-size: 40px;
+}
+.description{
+  color: #999;
+}
+.author{
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.song-notes-container{
+  column-count: 3;
+  column-gap: 2em;
+  margin-top: 3em;
+  flex-wrap: nowrap;
+}
+.song-note{
+  flex-wrap: wrap;
+  background-color: #fff;
+  border: solid 1px #999;
+  padding: 3% 5%;
+  border-radius: 9px;
+}
+
+
 .feed-row {
   width: 50%;
 }

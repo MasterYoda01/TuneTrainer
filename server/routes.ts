@@ -110,9 +110,9 @@ class Routes {
     return Responses.collections(collection);
   }
 
-  @Router.get("/id/collections/:id")
-  async getCollectionById(id: string) {
-    const collection = await SongCollection.getCollectionById(id);
+  @Router.get("/collection/:_id")
+  async getCollectionById(_id: string) {
+    const collection = await SongCollection.getCollectionById(_id);
     return Responses.collection(collection);
   }
 

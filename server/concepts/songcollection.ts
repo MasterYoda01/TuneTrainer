@@ -42,9 +42,9 @@ export default class SongCollectionConcept {
     return songCollections;
   }
 
-  async getCollectionById(_id: string): Promise<SongCollectionDoc> {
+  async getCollectionById(_id: string) {
     const newid = new ObjectId(_id);
-    const doc = await this.songCollections.readOne({ newid });
+    const doc = await this.songCollections.readOne({ _id: newid });
     if (doc === null) {
       throw new NotFoundError(`Collection does not exist!`);
     }
