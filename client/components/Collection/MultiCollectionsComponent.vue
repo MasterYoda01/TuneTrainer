@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { defineProps, ref } from "vue";
 
-import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
+import { useUserStore } from "../../stores/user";
 
 const { currentUsername } = storeToRefs(useUserStore());
 

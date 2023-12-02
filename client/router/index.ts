@@ -8,6 +8,7 @@ import GenerateSongView from "../views/GenerateSong.vue";
 import LoginView from "../views/LoginView.vue";
 import SettingView from "../views/SettingView.vue";
 import SingleCollectionView from "../views/SingleCollectionView.vue";
+import SongifiedNoteView from "../views/SongifiedNoteView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -16,6 +17,12 @@ const router = createRouter({
       path: "/generatesong",
       name: "GenerateSong",
       component: GenerateSongView,
+      meta: { requiresAuth: true, breadcrumb: "GenerateSong" },
+    },
+    {
+      path: "/songifiednote/id=:id",
+      name: "SongNote",
+      component: SongifiedNoteView,
       meta: { requiresAuth: true, breadcrumb: "GenerateSong" },
     },
     {

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import SongifiedNoteComponent from "@/components/SongifiedNote/SongifiedNoteComponent.vue";
 import moment from "moment";
 import { defineProps, onBeforeMount, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 import AccessControlManager from "../AccessControl/AccessControlManager.vue";
+import InnerCollectionComponent from "../SongifiedNote/InnerCollectionComponent.vue";
 
 const props = defineProps(["collection"]);
 const collection = props.collection;
-const songifiedNotes = ref([]);
+const songifiedNotes = ref<Array<Record<string, string>>>([]);
 
 async function getSongNotesOfCollection(collection_id: string) {
   try {
@@ -29,10 +29,11 @@ onBeforeMount(async () => {
   <div class="access-manage" v-if="collection.owner"><AccessControlManager v-bind:contentId="collection._id" /></div>
   <p class="description">{{ collection.description }}</p>
   <section class="song-notes-container">
-    <div v-for="note in songifiedNotes" :key="note">
-      <div class="song-note">
-        <SongifiedNoteComponent :songifiedNote="note" />
-      </div>
+    <div v-for="note in songifiedNotes" :key="note._id">
+      <RouterLink class="song-note" :to="{ name: 'SongNote', params: { id: note._id }}" >
+        <InnerCollectionComponent :songifiedNote="{backgroundMusicLink: note.backgroundMusicLink,
+        generatedLyrics: note.generatedLyrics }" />
+      </RouterLink>
     </div>
   </section>
 </template>
@@ -58,12 +59,8 @@ h2 {
 }
 
 .song-note {
-  flex-basis: calc(33% - 2em);
-  background-color: #fff;
-  border: solid 1px #999;
-  padding: 3% 5%;
-  border-radius: 9px;
-  margin-bottom: 2em;
+  color: #000;
+  text-decoration: none;
 }
 
 .feed-row {
