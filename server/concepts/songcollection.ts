@@ -32,6 +32,19 @@ export default class SongCollectionConcept {
     return songCollections;
   }
 
+  async getCollectionById(_id: ObjectId) {
+    const doc = await this.songCollections.readOne({ _id });
+    if (doc === null) {
+      throw new NotFoundError(`Collection does not exist!`);
+    }
+    return doc;
+  }
+
+  async getSongsInColection(_id: ObjectId): Promise<Array<ObjectId>> {
+    const collectionDoc: SongCollectionDoc = await this.getCollectionById(_id);
+    return collectionDoc.songifiedNotes;
+  }
+
   async getByAuthor(owner: ObjectId) {
     const songCollections = await this.songCollections.readMany(
       { owner: owner },
@@ -40,15 +53,6 @@ export default class SongCollectionConcept {
       },
     );
     return songCollections;
-  }
-
-  async getCollectionById(_id: string) {
-    const newid = new ObjectId(_id);
-    const doc = await this.songCollections.readOne({ _id: newid });
-    if (doc === null) {
-      throw new NotFoundError(`Collection does not exist!`);
-    }
-    return doc;
   }
 
   async updateNote(_id: string, update: Partial<SongCollectionDoc>) {
@@ -122,15 +126,15 @@ export default class SongCollectionConcept {
   //   return await this.songCollections.updateOne({ songCollection }, { upvotes: await this.updateUpvote(songCollection) });
   // }
 
-  // async isOwner(user: ObjectId, _id: ObjectId) {
-  //   const songCollection = await this.songCollections.readOne({ _id });
-  //   if (!songCollection) {
-  //     throw new NotFoundError(`Collection ${_id} does not exist!`);
-  //   }
-  //   if (songCollection.owner.toString() !== user.toString()) {
-  //     throw new CollectionAuthorNotMatchError(user, _id);
-  //   }
-  // }
+  async isOwner(isOwnerInput: { user: ObjectId; _id: ObjectId }) {
+    const songCollection = await this.songCollections.readOne({ _id: isOwnerInput._id });
+    if (!songCollection) {
+      throw new NotFoundError(`Collection ${isOwnerInput._id} does not exist!`);
+    }
+    if (songCollection.owner.toString() !== isOwnerInput.user.toString()) {
+      throw new CollectionAuthorNotMatchError(isOwnerInput.user, isOwnerInput._id);
+    }
+  }
 
   private sanitizeUpdate(update: Partial<SongCollectionDoc>) {
     // Make sure the update cannot change the author.

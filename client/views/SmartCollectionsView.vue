@@ -14,29 +14,28 @@ const userStore = useUserStore();
 const { currentUsername } = storeToRefs(userStore);
 
 const user = ref(router.currentRoute.value.params.user);
-const loaded = ref(false); 
-const collections = ref<Array<Record<string, string>>>([]); 
+const loaded = ref(false);
+const collections = ref<Array<Record<string, string>>>([]);
 
-//finds all collections owned/shared by user 
+//finds all collections owned/shared by user
 onBeforeMount(async () => {
   try {
-    const response = await fetchy(`/api/collections/${user.value}`, "GET", {});
+    const response = await fetchy(`/api/users/${user.value}/collections`, "GET", {});
     console.log("smart collections view", response);
     collections.value = response;
   } catch (error) {
     console.error("Error getting collection notes:", error);
-  } finally{
-    loaded.value = true; 
+  } finally {
+    loaded.value = true;
   }
-}); 
-
+});
 </script>
 
 <template>
   <main class="container">
-    <h3 class="major-labels">Smart <span style="color:#000">Collections</span></h3>
-    <CreateCollectionComponent v-if="user == currentUsername"/>
-    <MultiCollectionsComponent v-if="loaded" :collections="collections"/>
+    <h3 class="major-labels">Smart <span style="color: #000">Collections</span></h3>
+    <CreateCollectionComponent v-if="user == currentUsername" />
+    <MultiCollectionsComponent v-if="loaded" :collections="collections" />
     <AllSmartCollectionsComponent />
   </main>
 </template>

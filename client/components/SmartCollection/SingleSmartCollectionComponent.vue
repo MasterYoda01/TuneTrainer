@@ -6,6 +6,7 @@ import { storeToRefs } from "pinia";
 import { defineProps, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { fetchy } from "../../utils/fetchy";
+import AccessControlManager from "../AccessControl/AccessControlManager.vue";
 
 const userStore = useUserStore();
 const { currentUsername } = storeToRefs(userStore);
@@ -105,6 +106,7 @@ onMounted(async () => {
   <h2>{{ collection.title }}</h2>
   <span class="author">By {{ collection.owner }}</span>
   <span style="float: right; color: #999">Updated {{ moment(collection.dateUpdated).format("MM/DD/YY") }}</span>
+  <div class="access-manage" v-if="collection.owner"><AccessControlManager v-bind:contentId="collection._id" /></div>
   <p class="description">{{ collection.description }}</p>
   <section class="song-notes-container">
     <div v-for="note in collection.songifiedNotes">

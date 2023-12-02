@@ -1,9 +1,10 @@
-import { Router, getExpressRouter } from "./framework/router";
-
-import { SongCollection, SongifiedNote, User, WebSession } from "./app";
+import { ObjectId } from "mongodb";
+import { CollectionAccessControl, SongCollection, SongifiedNote, User, WebSession } from "./app";
 import { SongCollectionDoc } from "./concepts/songcollection";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
+import { Router, getExpressRouter } from "./framework/router";
+import { parseInputAsObjectId } from "./parser";
 import Responses from "./responses";
 
 class Routes {
@@ -98,7 +99,7 @@ class Routes {
 
   // COLLECTIONS CONCEPT
 
-  @Router.get("/collections/:username")
+  @Router.get("/users/:username/collections")
   async getCollectionByOwner(username: string) {
     let collection;
     if (username) {
@@ -110,26 +111,31 @@ class Routes {
     return Responses.collections(collection);
   }
 
-  @Router.get("/collection/:_id")
-  async getCollectionById(_id: string) {
-    const collection = await SongCollection.getCollectionById(_id);
-    return Responses.collection(collection);
-  }
-
   // generate songified note concept
   @Router.post("/create/collection/")
   async createCollection(session: WebSessionDoc, title: string, description: string) {
     const user = WebSession.getUser(session);
-    return await SongCollection.create(user, title, description);
+    const created = await SongCollection.create(user, title, description);
+    if (created.songCollection !== null) {
+      await CollectionAccessControl.putAccess(user, created.songCollection._id); // author always has access
+    }
+
+    return { msg: created.msg, collection: await Responses.collection(created.songCollection) };
   }
 
   @Router.patch("/collection/add/")
-  async addNote(collection_id: string, songifiedNoteToAdd: string) {
+  async addNote(session: WebSessionDoc, collection_id: string, songifiedNoteToAdd: string) {
+    const user = WebSession.getUser(session);
+    const parsedCollectionId: ObjectId = parseInputAsObjectId(collection_id);
+    await SongCollection.isOwner({ user, _id: parsedCollectionId });
     return await SongCollection.addNote(collection_id, songifiedNoteToAdd);
   }
 
   @Router.patch("/collections/:_id")
-  async updateCollection(collection_id: string, update: Partial<SongCollectionDoc>) {
+  async updateCollection(session: WebSessionDoc, collection_id: string, update: Partial<SongCollectionDoc>) {
+    const user = WebSession.getUser(session);
+    const parsedCollectionId: ObjectId = parseInputAsObjectId(collection_id);
+    await SongCollection.isOwner({ user, _id: parsedCollectionId });
     return await SongCollection.updateNote(collection_id, update);
   }
 
@@ -180,6 +186,113 @@ class Routes {
   async getSongifiedNotesBySongId(songId: string) {
     const songNote = await SongifiedNote.getSongifiedNoteBySongId(songId);
     return { msg: "Got Songified Note by _id!", songNote: songNote };
+  }
+
+  /**
+   *  Grants a user access to the collection; can only be performed by author of collection
+   *
+   * @param session
+   * @param contentId the id of the collection
+   * @param userId the id of the user who will be granted access to the collection
+   */
+  @Router.put("/collection_access_controls/users/:userId/accessibleContent")
+  async grantUserAccessToCollection(session: WebSessionDoc, contentId: string, userId: string) {
+    const user = WebSession.getUser(session);
+    const parsedCollectionId: ObjectId = parseInputAsObjectId(contentId);
+
+    //assert content existence
+    await SongCollection.getCollectionById(parsedCollectionId);
+
+    const parsedUserId: ObjectId = parseInputAsObjectId(userId);
+    await User.userExists(parsedUserId);
+
+    await SongCollection.isOwner({ user, _id: parsedCollectionId });
+    return await CollectionAccessControl.putAccess(parsedUserId, parsedCollectionId);
+  }
+
+  /**
+   * Makes it so that the user with id `userId` no longer has access to the the collection corresponding
+   * to the access controller with id `_id`; can only be performed by the author of the collection
+   *
+   * @param session
+   * @param _id the id of the collection
+   * @param userId the id of the user whose access will be removed from the collection
+   */
+  @Router.delete("/collection_access_controls/users/:userId/accessibleContent/:_id")
+  async removeUserAccessToCollection(session: WebSessionDoc, _id: string, userId: string) {
+    const user = WebSession.getUser(session);
+
+    const parsedCollectionId: ObjectId = parseInputAsObjectId(_id);
+    await SongCollection.getCollectionById(parsedCollectionId);
+
+    const parsedUserId: ObjectId = parseInputAsObjectId(userId);
+    await User.userExists(parsedUserId);
+
+    await SongCollection.isOwner({ user, _id: parsedCollectionId });
+    return await CollectionAccessControl.removeAccess(parsedUserId, parsedCollectionId, user); // TODO: store author as state Or read from songcollectionconcept
+  }
+
+  /**
+   *
+   *
+   * @param session of a user
+   * @returns the collections that the user has access to (that aren't public)
+   */
+  @Router.get("/accessible_collections")
+  async getAccessibleCollectionsWithRestrictedAccess(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getContentSharedWithUser(user)).map((id) => {
+      return SongCollection.getCollectionById(id);
+    });
+    const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
+
+    return { msg: "Success", collections: Responses.collections(accessibleCollections) };
+  }
+
+  /**
+   *
+   *
+   * @param session of a user
+   * @param id the id of a collection
+   * @returns the contents of the collection, only if `user` has access to it
+   */
+  @Router.get("/collections/:id")
+  async getCollectionById(
+    session: WebSessionDoc,
+    id: string,
+  ): Promise<{
+    owner: string;
+    title: string;
+    description: string;
+    songifiedNotes: ObjectId[];
+    upvotes: number;
+    _id: ObjectId;
+    dateCreated: Date;
+    dateUpdated: Date;
+  } | null> {
+    const user = WebSession.getUser(session);
+    const parsedCollectionId: ObjectId = parseInputAsObjectId(id);
+
+    await CollectionAccessControl.assertHasAccess(user, parsedCollectionId);
+
+    return Responses.collection(await SongCollection.getCollectionById(parsedCollectionId));
+  }
+
+  /**
+   *
+   * @param session of a user with access to the collection
+   * @param collectionId an ObjectId
+   * @returns the list of users who will have access to the collection if it is not public
+   */
+  @Router.get("/collections/:collectionId/users_with_restricted_access")
+  async getUsersWithRestrictedAccess(session: WebSessionDoc, collectionId: string) {
+    const user = WebSession.getUser(session);
+    const parsedCollectionId: ObjectId = parseInputAsObjectId(collectionId);
+
+    await CollectionAccessControl.assertHasAccess(user, parsedCollectionId);
+    const userIds: ObjectId[] = await CollectionAccessControl.getUsersWithRestrictedAccess(parsedCollectionId);
+    const userInfoProcesses = userIds.map((userId) => User.getUserById(userId));
+    return await Promise.all(userInfoProcesses);
   }
 }
 
