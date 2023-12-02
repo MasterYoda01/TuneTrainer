@@ -4,7 +4,7 @@ import { SongCollectionDoc } from "./concepts/songcollection";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
 import { Router, getExpressRouter } from "./framework/router";
-import { parseInputAsObjectId } from "./parser";
+import { idsAreEqual, parseInputAsObjectId } from "./parser";
 import Responses from "./responses";
 
 class Routes {
