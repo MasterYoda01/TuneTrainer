@@ -16,6 +16,7 @@ onBeforeMount(async () => {
     collection.value = await fetchy(`/api/collections/${collection_id.value}`, "GET", {});
     console.log(collection.value);
   } catch (error) {
+    console.log(error);
   } finally {
     loaded.value = true;
   }

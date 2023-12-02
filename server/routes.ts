@@ -58,7 +58,7 @@ class Routes {
 
   // generate songified note concept
   @Router.post("/generate/songifiednote/")
-  async generateSongifiedNote(session: WebSessionDoc, rawNote: string, lyricsTemplate: string) {
+  async generateSongifiedNote(session: WebSessionDoc, rawNote: string, lyricsTemplate: string, backgroundMusicLink: string) {
     //UNCOMMENT THIS LINE TO TEST WITH GPT
     // const generatedLyrics = await generateSongLyrics(rawNote, lyricsTemplate);
 
@@ -83,7 +83,7 @@ class Routes {
 
     if (generatedLyrics) {
       const user = WebSession.getUser(session);
-      const songifiednote = await SongifiedNote.createSongifiedNote(user, rawNote, generatedLyrics, lyricsTemplate);
+      const songifiednote = await SongifiedNote.createSongifiedNote(user, rawNote, generatedLyrics, lyricsTemplate, backgroundMusicLink);
 
       return { msg: "Song Generated", songifiednote: songifiednote };
     } else {
@@ -139,6 +139,19 @@ class Routes {
     return await SongCollection.updateNote(collection_id, update);
   }
 
+  //return objects of all songified notes in the collection
+  @Router.get("/songifiednotes/collection/:collection_id")
+  async getSongNotesInCollection(collection_id: string) {
+    const songNoteIds = (await SongCollection.getCollectionById(new ObjectId(collection_id))).songifiedNotes;
+    const songNotesArray = [];
+
+    for (const songNoteId of songNoteIds) {
+      const songNote = await SongifiedNote.getSongifiedNoteBySongId(songNoteId);
+      songNotesArray.push(songNote);
+    }
+    return songNotesArray;
+  }
+
   // @Router.delete("/collections/:_id")
   // async deleteCollection(session: WebSessionDoc, _id: ObjectId) {
   //   const user = WebSession.getUser(session);
@@ -184,7 +197,7 @@ class Routes {
 
   @Router.get("/songifiednotes/author/:songId")
   async getSongifiedNotesBySongId(songId: string) {
-    const songNote = await SongifiedNote.getSongifiedNoteBySongId(songId);
+    const songNote = await SongifiedNote.getSongifiedNoteBySongId(new ObjectId(songId));
     return { msg: "Got Songified Note by _id!", songNote: songNote };
   }
 

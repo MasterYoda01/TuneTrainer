@@ -1,73 +1,24 @@
 <script setup lang="ts">
 import SongifiedNoteComponent from "@/components/SongifiedNote/SongifiedNoteComponent.vue";
-import { useUserStore } from "@/stores/user";
 import moment from "moment";
-import { storeToRefs } from "pinia";
-import { defineProps, onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { defineProps, onBeforeMount, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 import AccessControlManager from "../AccessControl/AccessControlManager.vue";
 
-const userStore = useUserStore();
-const { currentUsername } = storeToRefs(userStore);
-const following = ref<string[]>([]);
-
 const props = defineProps(["collection"]);
 const collection = props.collection;
+const songifiedNotes = ref([]);
 
-interface SmartCollection {
-  _id: string;
-  collectionName: string;
-  collectionTopic: string;
-  collectionTags: string[] | null;
-  containedPosts: string[];
-  dateCreated: string;
-  dateUpdated: string;
-}
-
-const smartColl = ref<SmartCollection | null>(null);
-const smartCollPosts = ref<Array<Record<string, string>>>([]);
-const isFollowingCollection = ref(false);
-
-const route = useRoute();
-
-async function getCollection() {
-  const collectionname = Array.isArray(route.params.collectionname) ? route.params.collectionname[0] : route.params.collectionname;
-  const smartCollection = await fetchy(`/api/smartcollection/${collectionname}`, "GET", {});
-  smartColl.value = smartCollection.smartCollection;
-  smartCollPosts.value = smartCollection.posts;
-}
-
-async function getUserFollows() {
+async function getSongNotesOfCollection(collection_id: string) {
   try {
-    const uFollowing = await fetchy(`/api/following/${currentUsername.value}/collection`, "GET", {});
-    following.value = uFollowing;
-  } catch (error) {
-    console.error("Error fetching user info: ", error);
-  }
-}
-async function followCollection() {
-  try {
-    await fetchy(`/api/smartcollection/follow/${smartColl.value?.collectionName}`, "POST", {});
-    isFollowingCollection.value = true;
-  } catch (error) {
-    console.error("Error following collection", error);
+    songifiedNotes.value = await fetchy(`/api/songifiednotes/collection/${collection_id}`, "GET", {});
+  } catch (e) {
+    console.log(e);
   }
 }
 
-async function unfollowCollection() {
-  try {
-    await fetchy(`/api/smartcollection/unfollow/${smartColl.value?.collectionName}`, "DELETE", {});
-    isFollowingCollection.value = false;
-  } catch (error) {
-    console.error("Error following collection", error);
-  }
-}
-
-onMounted(async () => {
-  // await getCollection();
-  // await getUserFollows();
-  // if (smartColl.value) isFollowingCollection.value = following.value.includes(smartColl.value._id);
+onBeforeMount(async () => {
+  await getSongNotesOfCollection(collection._id);
 });
 
 // watch(
@@ -79,40 +30,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- <div>
-    <div v-if="smartColl" class="smart-collection-block">
-      <div class="header">
-        <h3>{{ smartColl.collectionTopic }}</h3>
-        <button class="global-button-green" v-if="!isFollowingCollection" @click="followCollection">Follow</button>
-        <button class="global-button-blue" v-else @click="unfollowCollection">Unfollow</button>
-      </div>
-
-      <div class="smart-collection-tags">
-        <span v-for="tag in smartColl.collectionTags?.slice(0, 7)" :key="tag" class="smart-tag">{{ tag }}</span>
-      </div>
-      <p>Date Created: {{ smartColl?.dateCreated.split("T")[0] }}</p>
-      <p>Last Updated: {{ smartColl?.dateUpdated.split("T")[0] }}</p>
-    </div>
-    <br />
-    <div class="smart-collection-feed">
-      <div class="feed-row">
-        <PostListComponent @refreshPosts="getCollection" :posts="smartCollPosts.slice(smartCollPosts.length / 2)" :canEdit="false" />
-      </div>
-      <div class="feed-row">
-        <PostListComponent @refreshPosts="getCollection" :posts="smartCollPosts.slice(0, smartCollPosts.length / 2)" :canEdit="false" />
-      </div>
-    </div>
-  </div> -->
   <h2>{{ collection.title }}</h2>
   <span class="author">By {{ collection.owner }}</span>
   <span style="float: right; color: #999">Updated {{ moment(collection.dateUpdated).format("MM/DD/YY") }}</span>
   <div class="access-manage" v-if="collection.owner"><AccessControlManager v-bind:contentId="collection._id" /></div>
   <p class="description">{{ collection.description }}</p>
   <section class="song-notes-container">
-    <div v-for="note in collection.songifiedNotes">
+    <div v-for="note in songifiedNotes">
       <!--PROMI: create a component for a songified note, import it & pass note in this component-->
       <div class="song-note">
-        <SongifiedNoteComponent />
+        <SongifiedNoteComponent :songifiedNote="note" />
       </div>
     </div>
   </section>
@@ -132,17 +59,19 @@ h2 {
   letter-spacing: 1px;
 }
 .song-notes-container {
-  column-count: 3;
-  column-gap: 2em;
-  margin-top: 3em;
-  flex-wrap: nowrap;
-}
-.song-note {
+  display: flex;
   flex-wrap: wrap;
+  margin-top: 3em;
+  gap: 2em;
+}
+
+.song-note {
+  flex-basis: calc(33% - 2em);
   background-color: #fff;
   border: solid 1px #999;
   padding: 3% 5%;
   border-radius: 9px;
+  margin-bottom: 2em;
 }
 
 .feed-row {

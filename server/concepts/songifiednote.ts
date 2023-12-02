@@ -7,14 +7,13 @@ export interface SongifiedNoteDoc extends BaseDoc {
   generatedLyrics: string;
   lyricsTemplate: string;
   backgroundMusicLink: string; //link to the songs on the server
-  // quizCard: string; //actually let's omit this
 }
 
 export default class SongifiedNoteConcept {
   public readonly songifiednotes = new DocCollection<SongifiedNoteDoc>("songifiednote");
 
-  async createSongifiedNote(author: ObjectId, rawNote: string, generatedLyrics: string, lyricsTemplate: string) {
-    const _id = await this.songifiednotes.createOne({ author: author, rawNote: rawNote, generatedLyrics: generatedLyrics, lyricsTemplate: lyricsTemplate });
+  async createSongifiedNote(author: ObjectId, rawNote: string, generatedLyrics: string, lyricsTemplate: string, backgroundMusicLink: string) {
+    const _id = await this.songifiednotes.createOne({ author: author, rawNote: rawNote, generatedLyrics: generatedLyrics, lyricsTemplate: lyricsTemplate, backgroundMusicLink: backgroundMusicLink });
     return await this.songifiednotes.readOne({ _id });
   }
 
@@ -34,7 +33,7 @@ export default class SongifiedNoteConcept {
     return this.songifiednotes.readMany({ author: new ObjectId(authorId) });
   }
 
-  async getSongifiedNoteBySongId(songId: string) {
-    return this.songifiednotes.readOne({ _id: new ObjectId(songId) });
+  async getSongifiedNoteBySongId(songId: ObjectId) {
+    return this.songifiednotes.readOne({ _id: songId });
   }
 }
