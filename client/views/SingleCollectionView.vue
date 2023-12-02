@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SingleSmartCollectionComponent from "@/components/SmartCollection/SingleSmartCollectionComponent.vue";
+import SingleCollectionComponent from "@/components/Collection/SingleCollectionComponent.vue";
 import router from "@/router";
 import { onBeforeMount, ref } from "vue";
 import { fetchy } from "../utils/fetchy";
@@ -25,7 +25,7 @@ onBeforeMount(async () => {
 
 <template>
   <main class="container">
-    <SingleSmartCollectionComponent v-if="loaded" :collection="collection" />
+    <SingleCollectionComponent v-if="loaded" :collection="collection" />
     <h3 v-else>Loading...</h3>
   </main>
 </template>

@@ -8,7 +8,6 @@ import { fetchy } from "../../utils/fetchy";
 const userStore = useUserStore();
 const { currentUsername } = storeToRefs(userStore);
 
-const mounted = ref(false);
 const userNotes = ref("");
 const apiResponse = ref("");
 const errorMessage = ref("");

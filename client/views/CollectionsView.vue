@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import AllSmartCollectionsComponent from "@/components/SmartCollection/AllSmartCollectionsComponent.vue";
-import CreateCollectionComponent from "../components/SmartCollection/CreateCollectionComponent.vue";
-// import UserSmartCollectionsComponent from "@/components/SmartCollection/UserSmartCollectionsComponent.vue";
-import MultiCollectionsComponent from "../components/SmartCollection/MultiCollectionsComponent.vue";
+import AllCollectionsComponent from "@/components/Collection/AllCollectionsComponent.vue";
+import CreateCollectionComponent from "@/components/Collection/CreateCollectionComponent.vue";
+import MultiCollectionsComponent from "@/components/Collection/MultiCollectionsComponent.vue";
 
 import router from "@/router";
 import { useUserStore } from "@/stores/user";
@@ -36,11 +35,11 @@ onBeforeMount(async () => {
 
 <template>
   <main class="container">
-    <h3 class="major-labels">Smart <span style="color: #000">Collections</span></h3>
+    <h3 class="major-labels">Collections</h3>
     <CreateCollectionComponent v-if="user == currentUsername" />
     <MultiCollectionsComponent v-if="loaded" :collections="collections" headerText="Collections" />
     <MultiCollectionsComponent v-if="loaded" :collections="sharedCollections.filter((collection) => !collections.includes(collection))" headerText="Shared Collections" />
-    <AllSmartCollectionsComponent />
+    <AllCollectionsComponent />
   </main>
 </template>
 

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from "vue";
 
-interface SmartCollection {
+interface Collection {
   _id: string;
   collectionName: string;
   collectionTopic: string;
   collectionTags: string[];
   containedPosts: string[];
 }
-const allSmartCollections = ref<SmartCollection[]>([]);
+const allCollections = ref<Collection[]>([]);
 
 const collectionContainer = ref<HTMLElement | null>(null);
 
@@ -25,9 +25,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="allSmartCollections">
+  <div v-if="allCollections">
     <div ref="collectionContainer" class="smart-collection-container">
-      <router-link v-for="collection in allSmartCollections" :key="collection._id" :to="'/smartcollection/' + collection.collectionName" class="smart-collection-block">
+      <router-link v-for="collection in allCollections" :key="collection._id" :to="'/Collection/' + collection.collectionName" class="smart-collection-block">
         <h4>{{ collection.collectionTopic }}</h4>
         <div class="smart-collection-tags">
           <span v-for="tag in collection.collectionTags.slice(0, 3)" :key="tag" class="smart-tag">{{ tag }}</span>

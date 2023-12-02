@@ -20,13 +20,6 @@ async function getSongNotesOfCollection(collection_id: string) {
 onBeforeMount(async () => {
   await getSongNotesOfCollection(collection._id);
 });
-
-// watch(
-//   () => route.params.collectionname,
-//   async () => {
-//     await getCollection();
-//   },
-// );
 </script>
 
 <template>
@@ -36,8 +29,7 @@ onBeforeMount(async () => {
   <div class="access-manage" v-if="collection.owner"><AccessControlManager v-bind:contentId="collection._id" /></div>
   <p class="description">{{ collection.description }}</p>
   <section class="song-notes-container">
-    <div v-for="note in songifiedNotes">
-      <!--PROMI: create a component for a songified note, import it & pass note in this component-->
+    <div v-for="note in songifiedNotes" :key="note">
       <div class="song-note">
         <SongifiedNoteComponent :songifiedNote="note" />
       </div>
@@ -95,7 +87,7 @@ h2 {
 }
 
 .smart-collection-block,
-.smartcollection-feed {
+.Collection-feed {
   width: 97%;
 }
 

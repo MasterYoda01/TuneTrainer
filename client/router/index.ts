@@ -3,24 +3,17 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
 
-import FeedView from "../views/FeedView.vue";
+import CollectionsView from "../views/CollectionsView.vue";
 import GenerateSongView from "../views/GenerateSong.vue";
 import LoginView from "../views/LoginView.vue";
 import SettingView from "../views/SettingView.vue";
-import SingleSmartCollectionView from "../views/SingleSmartCollectionView.vue";
-import SmartCollectionsView from "../views/SmartCollectionsView.vue";
+import SingleCollectionView from "../views/SingleCollectionView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/feed",
-      name: "Feed",
-      component: FeedView,
-      meta: { requiresAuth: true, breadcrumb: "Feed" },
-    },
-    {
-      path: "/GenerateSong",
+      path: "/generatesong",
       name: "GenerateSong",
       component: GenerateSongView,
       meta: { requiresAuth: true, breadcrumb: "GenerateSong" },
@@ -28,14 +21,14 @@ const router = createRouter({
     {
       path: "/collections/user=:user",
       name: "Collections",
-      component: SmartCollectionsView,
+      component: CollectionsView,
       meta: { requiresAuth: true, breadcrumb: "Collections" },
     },
     {
-      path: "/smartcollection/id=:id",
-      name: "SmartCollection",
-      component: SingleSmartCollectionView,
-      meta: { requiresAuth: true, breadcrumb: "SmartCollection" },
+      path: "/Collection/id=:id",
+      name: "Collection",
+      component: SingleCollectionView,
+      meta: { requiresAuth: true, breadcrumb: "Collection" },
     },
     {
       path: "/setting",
@@ -51,7 +44,7 @@ const router = createRouter({
       beforeEnter: (to, from) => {
         const { isLoggedIn } = storeToRefs(useUserStore());
         if (isLoggedIn.value) {
-          return { name: "Feed" };
+          return { name: "Collections" };
         }
       },
     },

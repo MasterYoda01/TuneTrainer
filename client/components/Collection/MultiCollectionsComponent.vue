@@ -47,7 +47,7 @@ interface SongCollectionDoc {
   <div>
     <h3>{{ $props.headerText }}</h3>
     <div class="collections-container">
-      <RouterLink v-for="collection in collections" :key="collection._id" style="text-decoration: none" :to="{ name: 'SmartCollection', params: { id: collection._id } }">
+      <RouterLink v-for="collection in collections" :key="collection._id" style="text-decoration: none" :to="{ name: 'Collection', params: { id: collection._id } }">
         <div :key="collection._id" class="collection-block">
           <span class="title">{{ collection.title }}</span>
           {{ collection.songifiedNotes.length }} Songs <br />By {{ collection.owner }}
