@@ -14,7 +14,7 @@ onBeforeMount(async () => {
   try {
     console.log("what");
 
-    note.value =( await fetchy(`/api/songifiednotes/id/${note_id.value}`, "GET", {})).songNote;
+    note.value = (await fetchy(`/api/songifiednotes/id/${note_id.value}`, "GET", {})).songNote;
     console.log(note.value);
   } catch (error) {
     console.log(error);
