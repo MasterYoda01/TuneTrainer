@@ -20,7 +20,7 @@ export default class AccessControlConcept {
 
   public constructor(contentType: string) {
     this.accessControls = new ParentConcept(`${contentType}_access_controls`); // if the content is not public, `user` has access to `content` iff `user` is parent of `content`
-    this.publicContent = new DocCollection<PublicityDoc>(`$public_${contentType}`); // all users have access to `content` if `publicityDoc.content  == content` for some publicityDoc in this collection
+    this.publicContent = new DocCollection<PublicityDoc>(`public_${contentType}`); // all users have access to `content` if `publicityDoc.content  == content` for some publicityDoc in this collection
   }
 
   /**
@@ -131,10 +131,8 @@ export default class AccessControlConcept {
    *
    * @param userContent
    * @returns the ids of users who have been explicitly given access to the content
-   * (if the content is public, then a string is returned)
    */
-  async getUsersWithRestrictedAccess(userContent: ObjectId): Promise<Array<ObjectId> | String> {
-    if (await this.isPublic(userContent)) return "everyone";
+  async getUsersWithRestrictedAccess(userContent: ObjectId): Promise<Array<ObjectId>> {
     return this.accessControls.getAllParents(userContent);
   }
 }

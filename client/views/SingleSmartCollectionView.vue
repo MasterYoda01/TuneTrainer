@@ -5,31 +5,28 @@ import { onBeforeMount, ref } from "vue";
 import { fetchy } from "../utils/fetchy";
 
 const collection_id = ref(router.currentRoute.value.params.id);
-const collection = ref<Record<string, string>>({}); 
-const loaded = ref(false); 
+const collection = ref<Record<string, string>>({});
+const loaded = ref(false);
 
 onBeforeMount(async () => {
-  loaded.value = false; 
-  try{
+  loaded.value = false;
+  try {
     console.log("what");
-    
-    collection.value = await fetchy(`/api/collection/${collection_id.value}`, "GET", {});
-    console.log(collection.value);
-  }catch(error){
 
-  }finally{
-    loaded.value = true; 
+    collection.value = await fetchy(`/api/collections/${collection_id.value}`, "GET", {});
+    console.log(collection.value);
+  } catch (error) {
+  } finally {
+    loaded.value = true;
   }
 });
-
 </script>
 
 <template>
   <main class="container">
-    <SingleSmartCollectionComponent v-if="loaded" :collection = "collection"/>
+    <SingleSmartCollectionComponent v-if="loaded" :collection="collection" />
     <h3 v-else>Loading...</h3>
   </main>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -1,45 +1,54 @@
 <script setup lang="ts">
-import { fetchy } from "@/utils/fetchy"; // TODO: make faster by saving recipes and their accessors locally, and only calling fetch when updates are made...
+import { fetchy } from "@/utils/fetchy"; // TODO: make faster by saving collections and their accessors locally, and only calling fetch when updates are made...
 import { computed, onBeforeMount, ref } from "vue";
 type ContentIdentifier = { id: string; name: string };
 const defaultContentIdentifier = { id: "", name: "" };
 
 const props = defineProps(["contentId"]);
 const emit = defineEmits(["deactivateAccessControlManagement"]);
-const objectOfAccessControl = ref<ContentIdentifier>({ id: "", name: "(Press 'Manage access controls' on the desired collection)" }); // the id of the recipe whose access is being controlled
+const objectOfAccessControl = ref<ContentIdentifier>({ id: "", name: "N/A" }); // the id of the collection whose access is being controlled
 const disableAccessControlButtons = ref<boolean>(true);
+const usersWithAccess = ref<{ username: string; _id: string }[]>([]);
 
 const accessControlStarter = computed(() => {
   void activateAccessManager(props.contentId);
   return props.contentId;
 });
+
+/**
+ *
+ * @param id id of the collection whose access is being managed
+ */
+async function userAllowedToModerateAccess(id: string): Promise<boolean> {
+  return true;
+}
+
 /**
  * Helps with loading a ui element that allows the user to manage the access controls for a given piece of user content
  *
- * @param id the id of the recipe whose access is being managed
+ * @param id the id of the collection whose access is being managed
  */
 async function activateAccessManager(id: string) {
-  objectOfAccessControl.value.id = id;
+  if (id === undefined) return;
+  const userCanModerate: boolean = await userAllowedToModerateAccess(id);
+  if (!userCanModerate) return;
   if (id.length === 0) {
     disableAccessControlButtons.value = true; // make a computed value.
     return;
   }
   disableAccessControlButtons.value = false;
   try {
-    objectOfAccessControl.value.name = (await fetchy(`/api/collections/${id}`, "GET")).dishName; // [UX] TODO: when the database updates, re-perform this call! e.g. if you update the name of the recipe in access controls
+    objectOfAccessControl.value.name = (await fetchy(`/api/collections/${id}`, "GET")).title; // [UX] TODO: when the database updates, re-perform this call! e.g. if you update the name of the collection in access controls
   } catch (_) {
     return;
   }
-}
 
-function disactivateAccessManager() {
-  disableAccessControlButtons.value = true; // make a computed value.
-  objectOfAccessControl.value = defaultContentIdentifier; // make disabling of buttons computed so it updates in response to this change
+  await syncUsersWithAccess();
 }
 
 type AccessRequestInput = {
   subject: string; // the username of the person being granted access to an item of user content
-  object: string; // the id of the recipe
+  object: string; // the id of the content
 };
 async function grantSubjectAccessToObject(requestedAccessControl: AccessRequestInput) {
   // convert the subjectName to an id
@@ -57,6 +66,18 @@ async function grantSubjectAccessToObject(requestedAccessControl: AccessRequestI
   } catch (_) {
     return;
   }
+  await syncUsersWithAccess();
+}
+
+async function syncUsersWithAccess() {
+  try {
+    const response = await fetchy(`/api/collections/${objectOfAccessControl.value.id}/users_with_restricted_access`, "GET");
+    usersWithAccess.value = response;
+    console.log("new set of users");
+    console.log(response);
+  } catch (_) {
+    return;
+  }
 }
 
 async function removeSubjectAccessToObject(requestedAccessControl: AccessRequestInput) {
@@ -71,10 +92,11 @@ async function removeSubjectAccessToObject(requestedAccessControl: AccessRequest
   }
 
   try {
-    await fetchy(`/api/recipe_access_controls/users/${subjectId}/accessibleContent/${requestedAccessControl.object}`, "DELETE"); // TODO: display state of user access (whether they have it or not)
+    await fetchy(`/api/collection_access_controls/users/${subjectId}/accessibleContent/${requestedAccessControl.object}`, "DELETE"); // TODO: display state of user access (whether they have it or not)
   } catch (_) {
     return;
   }
+  await syncUsersWithAccess();
 }
 
 const subjectOfAccessControlName = ref<string>(""); // the username of the user whose access is being changed
@@ -87,21 +109,22 @@ onBeforeMount(async () => {
 <template>
   <v-dialog width="500">
     <template v-slot:activator="{ props }">
-      <v-btn v-bind="props" text="Grant access to certain users"> </v-btn>
+      <v-btn v-bind="props" text="Share"> </v-btn>
     </template>
 
     <template v-slot:default="{ isActive }">
-      <v-card title="User Permissions">
+      <v-card title="Share">
         <div class="field">
-          <p class="recipeObjectName">
-            Recipe: <b>{{ objectOfAccessControl.name }}</b>
+          <p class="collectionObjectName">
+            Collection: <b>{{ objectOfAccessControl.name }}</b>
           </p>
 
           <label>
-            User whose access you want to manage:
+            Add a user:
             <v-text-field label="Username" v-model="subjectOfAccessControlName" />
           </label>
         </div>
+
         <v-btn
           color="teal-lighten-3"
           v-bind:disabled="disableAccessControlButtons"
@@ -117,6 +140,12 @@ onBeforeMount(async () => {
           Remove access
         </v-btn>
         <!--show current state-->
+        <div class="peopleWithAcces">
+          <p>People with Access:</p>
+          <ul>
+            <li v-for="user in usersWithAccess" :key="user._id">{{ user.username }}</li>
+          </ul>
+        </div>
 
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -126,7 +155,6 @@ onBeforeMount(async () => {
             @click="
               () => {
                 isActive.value = false;
-                objectOfAccessControl = defaultContentIdentifier; // make disabling of buttons computed so it updates in response to this change
               }
             "
           ></v-btn>

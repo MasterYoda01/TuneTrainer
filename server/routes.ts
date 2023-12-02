@@ -99,7 +99,7 @@ class Routes {
 
   // COLLECTIONS CONCEPT
 
-  @Router.get("/collections/:username")
+  @Router.get("/users/:username/collections")
   async getCollectionByOwner(username: string) {
     let collection;
     if (username) {
@@ -109,12 +109,6 @@ class Routes {
       return { msg: "No owner" };
     }
     return Responses.collections(collection);
-  }
-
-  @Router.get("/collection/:_id")
-  async getCollectionById(_id: string) {
-    const collection = await SongCollection.getCollectionById(_id);
-    return Responses.collection(collection);
   }
 
   // generate songified note concept
@@ -133,7 +127,7 @@ class Routes {
   async addNote(session: WebSessionDoc, collection_id: string, songifiedNoteToAdd: string) {
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(collection_id);
-    await SongCollection.isOwner(user, parsedCollectionId);
+    await SongCollection.isOwner({ user, _id: parsedCollectionId });
     return await SongCollection.addNote(collection_id, songifiedNoteToAdd);
   }
 
@@ -141,7 +135,7 @@ class Routes {
   async updateCollection(session: WebSessionDoc, collection_id: string, update: Partial<SongCollectionDoc>) {
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(collection_id);
-    await SongCollection.isOwner(user, parsedCollectionId);
+    await SongCollection.isOwner({ user, _id: parsedCollectionId });
     return await SongCollection.updateNote(collection_id, update);
   }
 
@@ -212,7 +206,7 @@ class Routes {
     const parsedUserId: ObjectId = parseInputAsObjectId(userId);
     await User.userExists(parsedUserId);
 
-    await SongCollection.isOwner(parsedCollectionId, user);
+    await SongCollection.isOwner({ user, _id: parsedCollectionId });
     return await CollectionAccessControl.putAccess(parsedUserId, parsedCollectionId);
   }
 
@@ -234,7 +228,7 @@ class Routes {
     const parsedUserId: ObjectId = parseInputAsObjectId(userId);
     await User.userExists(parsedUserId);
 
-    await SongCollection.isOwner(parsedCollectionId, user);
+    await SongCollection.isOwner({ user, _id: parsedCollectionId });
     return await CollectionAccessControl.removeAccess(parsedUserId, parsedCollectionId, user); // TODO: store author as state Or read from songcollectionconcept
   }
 
@@ -252,7 +246,7 @@ class Routes {
     });
     const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
 
-    return { msg: "Success", collections: accessibleCollections };
+    return { msg: "Success", collections: Responses.collections(accessibleCollections) };
   }
 
   /**
@@ -263,13 +257,42 @@ class Routes {
    * @returns the contents of the collection, only if `user` has access to it
    */
   @Router.get("/collections/:id")
-  async getCollectionById(session: WebSessionDoc, id: string) {
+  async getCollectionById(
+    session: WebSessionDoc,
+    id: string,
+  ): Promise<{
+    owner: string;
+    title: string;
+    description: string;
+    songifiedNotes: ObjectId[];
+    upvotes: number;
+    _id: ObjectId;
+    dateCreated: Date;
+    dateUpdated: Date;
+  } | null> {
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(id);
 
     await CollectionAccessControl.assertHasAccess(user, parsedCollectionId);
 
-    return SongCollection.getCollectionById(parsedCollectionId);
+    return Responses.collection(await SongCollection.getCollectionById(parsedCollectionId));
+  }
+
+  /**
+   *
+   * @param session of a user with access to the collection
+   * @param collectionId an ObjectId
+   * @returns the list of users who will have access to the collection if it is not public
+   */
+  @Router.get("/collections/:collectionId/users_with_restricted_access")
+  async getUsersWithRestrictedAccess(session: WebSessionDoc, collectionId: string) {
+    const user = WebSession.getUser(session);
+    const parsedCollectionId: ObjectId = parseInputAsObjectId(collectionId);
+
+    await CollectionAccessControl.assertHasAccess(user, parsedCollectionId);
+    const userIds: ObjectId[] = await CollectionAccessControl.getUsersWithRestrictedAccess(parsedCollectionId);
+    const userInfoProcesses = userIds.map((userId) => User.getUserById(userId));
+    return await Promise.all(userInfoProcesses);
   }
 }
 
