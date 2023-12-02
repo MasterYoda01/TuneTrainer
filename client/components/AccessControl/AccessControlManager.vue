@@ -37,13 +37,14 @@ async function activateAccessManager(id: string) {
     return;
   }
   disableAccessControlButtons.value = false;
+
+  objectOfAccessControl.value.id = id;
   try {
     objectOfAccessControl.value.name = (await fetchy(`/api/collections/${id}`, "GET")).title; // [UX] TODO: when the database updates, re-perform this call! e.g. if you update the name of the collection in access controls
+    await syncUsersWithAccess();
   } catch (_) {
     return;
   }
-
-  await syncUsersWithAccess();
 }
 
 type AccessRequestInput = {
@@ -63,10 +64,10 @@ async function grantSubjectAccessToObject(requestedAccessControl: AccessRequestI
 
   try {
     await fetchy(`/api/collection_access_controls/users/${subjectId}/accessibleContent`, "PUT", { body: { contentId: requestedAccessControl.object } }); // TODO: display state of user access (whether they have it or not)
+    await syncUsersWithAccess();
   } catch (_) {
     return;
   }
-  await syncUsersWithAccess();
 }
 
 async function syncUsersWithAccess() {
