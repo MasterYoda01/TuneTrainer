@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SongifiedNoteComponent from "@/components/SongifiedNote/SongifiedNoteComponent.vue";
 import { useUserStore } from "@/stores/user";
 import moment from "moment";
 import { storeToRefs } from "pinia";
@@ -109,8 +110,9 @@ onMounted(async () => {
   <p class="description">{{ collection.description }}</p>
   <section class="song-notes-container">
     <div v-for="note in collection.songifiedNotes">
+      <!--PROMI: create a component for a songified note, import it & pass note in this component-->
       <div class="song-note">
-        {{ note }}
+        <SongifiedNoteComponent />
       </div>
     </div>
   </section>
