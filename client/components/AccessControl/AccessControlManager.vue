@@ -8,7 +8,11 @@ const props = defineProps(["contentId"]);
 const emit = defineEmits(["deactivateAccessControlManagement"]);
 const objectOfAccessControl = ref<ContentIdentifier>({ id: "", name: "N/A" }); // the id of the collection whose access is being controlled
 const disableAccessControlButtons = ref<boolean>(true);
-const usersWithAccess = ref<{ username: string; _id: string }[]>([]);
+
+type userDescription = { username: string; _id: string };
+type AccessControl = { usersWithExplicitAccess: userDescription[]; isPublic: boolean };
+
+const accessControl = ref<AccessControl>({ isPublic: false, usersWithExplicitAccess: [] });
 
 const accessControlStarter = computed(() => {
   void activateAccessManager(props.contentId);
@@ -70,12 +74,28 @@ async function grantSubjectAccessToObject(requestedAccessControl: AccessRequestI
   }
 }
 
+async function makePublic() {
+  try {
+    await fetchy(`/api/collection_access_controls/publicCollections/${objectOfAccessControl.value.id}`, "PUT");
+    await syncUsersWithAccess();
+  } catch (_) {
+    return;
+  }
+}
+
+async function makeRestricted() {
+  try {
+    await fetchy(`/api/collection_access_controls/publicCollections/${objectOfAccessControl.value.id}`, "DELETE");
+    await syncUsersWithAccess();
+  } catch (_) {
+    return;
+  }
+}
+
 async function syncUsersWithAccess() {
   try {
-    const response = await fetchy(`/api/collections/${objectOfAccessControl.value.id}/users_with_restricted_access`, "GET");
-    usersWithAccess.value = response;
-    console.log("new set of users");
-    console.log(response);
+    const response = await fetchy(`/api/collection_access_controls/${objectOfAccessControl.value.id}`, "GET");
+    accessControl.value = { usersWithExplicitAccess: response.usersWithExplicitAccess, isPublic: response.isPublic };
   } catch (_) {
     return;
   }
@@ -111,6 +131,7 @@ onBeforeMount(async () => {
   <v-dialog width="500">
     <template v-slot:activator="{ props }">
       <v-btn v-bind="props" text="Share"> </v-btn>
+      <!--TODO: button should display summary of share status (restricted, public, private)-->
     </template>
 
     <template v-slot:default="{ isActive }">
@@ -125,7 +146,6 @@ onBeforeMount(async () => {
             <v-text-field label="Username" v-model="subjectOfAccessControlName" />
           </label>
         </div>
-
         <v-btn
           color="teal-lighten-3"
           v-bind:disabled="disableAccessControlButtons"
@@ -142,10 +162,18 @@ onBeforeMount(async () => {
         </v-btn>
         <!--show current state-->
         <div class="peopleWithAcces">
-          <p>People with Access:</p>
+          <h3>People with Access:</h3>
           <ul>
-            <li v-for="user in usersWithAccess" :key="user._id">{{ user.username }}</li>
+            <li v-for="user in accessControl.usersWithExplicitAccess" :key="user._id">{{ user.username }}</li>
           </ul>
+        </div>
+        <div class="general_access">
+          <h3>General access:</h3>
+          <p>Is Public? {{ accessControl.isPublic }}</p>
+          <div class="options_for_general_access">
+            <v-btn color="teal-lighten-3" v-bind:disabled="disableAccessControlButtons" @click="() => makePublic()"> Anyone with link can view </v-btn>
+            <v-btn color="teal-lighten-1" v-bind:disabled="disableAccessControlButtons" @click="() => makeRestricted()"> Restricted to people with access </v-btn>
+          </div>
         </div>
 
         <v-card-actions>
