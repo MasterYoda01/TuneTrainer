@@ -291,6 +291,22 @@ class Routes {
    * @param session of a user
    * @returns the collections that the user has access to (that aren't public)
    */
+  @Router.get("/public_collections")
+  async getPublicCollections() {
+    const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getPublicContent()).map((id) => {
+      return SongCollection.getCollectionById(id);
+    });
+    const publicCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
+
+    return Responses.collections(publicCollections);
+  }
+
+  /**
+   *
+   *
+   * @param session of a user
+   * @returns the collections that the user has access to (that aren't public)
+   */
   @Router.get("/other_users/accessible_collections")
   async getAccessibleCollectionsFromOtherUsers(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
