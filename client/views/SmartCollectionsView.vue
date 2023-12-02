@@ -16,6 +16,7 @@ const { currentUsername } = storeToRefs(userStore);
 const user = ref(router.currentRoute.value.params.user);
 const loaded = ref(false);
 const collections = ref<Array<Record<string, string>>>([]);
+const sharedCollections = ref<Array<Record<string, string>>>([]);
 
 //finds all collections owned/shared by user
 onBeforeMount(async () => {
@@ -23,6 +24,8 @@ onBeforeMount(async () => {
     const response = await fetchy(`/api/users/${user.value}/collections`, "GET", {});
     console.log("smart collections view", response);
     collections.value = response;
+    const sharedResponse = await fetchy(`/api/other_users/accessible_collections`, "GET");
+    sharedCollections.value = sharedResponse;
   } catch (error) {
     console.error("Error getting collection notes:", error);
   } finally {
@@ -35,7 +38,8 @@ onBeforeMount(async () => {
   <main class="container">
     <h3 class="major-labels">Smart <span style="color: #000">Collections</span></h3>
     <CreateCollectionComponent v-if="user == currentUsername" />
-    <MultiCollectionsComponent v-if="loaded" :collections="collections" />
+    <MultiCollectionsComponent v-if="loaded" :collections="collections" headerText="Collections" />
+    <MultiCollectionsComponent v-if="loaded" :collections="sharedCollections.filter((collection) => !collections.includes(collection))" headerText="Shared Collections" />
     <AllSmartCollectionsComponent />
   </main>
 </template>

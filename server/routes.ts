@@ -4,7 +4,7 @@ import { SongCollectionDoc } from "./concepts/songcollection";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
 import { Router, getExpressRouter } from "./framework/router";
-import { parseInputAsObjectId } from "./parser";
+import { idsAreEqual, parseInputAsObjectId } from "./parser";
 import Responses from "./responses";
 
 class Routes {
@@ -224,6 +224,42 @@ class Routes {
   }
 
   /**
+   * Makes the collection accessable to every user
+   *
+   * @param session of user who owns the collection
+   * @param contentId
+   */
+  @Router.put("/collection_access_controls/publicCollections/:contentId")
+  async makeCollectionPublic(session: WebSessionDoc, contentId: string) {
+    const user = WebSession.getUser(session);
+    const parsedCollectionId: ObjectId = parseInputAsObjectId(contentId);
+
+    //assert content existence
+    await SongCollection.getCollectionById(parsedCollectionId);
+
+    await SongCollection.isOwner({ user, _id: parsedCollectionId });
+    return await CollectionAccessControl.setPublic(parsedCollectionId);
+  }
+
+  /**
+   * Makes the collection non-public
+   *
+   * @param session of user who owns the collection
+   * @param contentId
+   */
+  @Router.delete("/collection_access_controls/publicCollections/:contentId")
+  async makeCollectionNonPublic(session: WebSessionDoc, contentId: string) {
+    const user = WebSession.getUser(session);
+    const parsedCollectionId: ObjectId = parseInputAsObjectId(contentId);
+
+    //assert content existence
+    await SongCollection.getCollectionById(parsedCollectionId);
+
+    await SongCollection.isOwner({ user, _id: parsedCollectionId });
+    return await CollectionAccessControl.setRestricted(parsedCollectionId);
+  }
+
+  /**
    * Makes it so that the user with id `userId` no longer has access to the the collection corresponding
    * to the access controller with id `_id`; can only be performed by the author of the collection
    *
@@ -259,7 +295,25 @@ class Routes {
     });
     const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
 
-    return { msg: "Success", collections: Responses.collections(accessibleCollections) };
+    return Responses.collections(accessibleCollections);
+  }
+
+  /**
+   *
+   *
+   * @param session of a user
+   * @returns the collections that the user has access to (that aren't public)
+   */
+  @Router.get("/other_users/accessible_collections")
+  async getAccessibleCollectionsFromOtherUsers(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getContentSharedWithUser(user)).map((id) => {
+      return SongCollection.getCollectionById(id);
+    });
+    const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
+    const collectionsByOthers = accessibleCollections.filter((collection) => !idsAreEqual(collection.owner, user));
+
+    return Responses.collections(collectionsByOthers);
   }
 
   /**
@@ -306,6 +360,38 @@ class Routes {
     const userIds: ObjectId[] = await CollectionAccessControl.getUsersWithRestrictedAccess(parsedCollectionId);
     const userInfoProcesses = userIds.map((userId) => User.getUserById(userId));
     return await Promise.all(userInfoProcesses);
+  }
+
+  /**
+   *
+   * @param session of a user with access to the collection
+   * @param collectionId an ObjectId
+   * @returns usersWithExplicitAccess: the list of users who will have access to the collection if it is not public,
+   *          isPublic: is true if collection is public
+   */
+  @Router.get("/collection_access_controls/:collectionId")
+  async getAccessControl(
+    session: WebSessionDoc,
+    collectionId: string,
+  ): Promise<{
+    isPublic: boolean;
+    usersWithExplicitAccess: {
+      username: string;
+      _id: ObjectId;
+      dateCreated: Date;
+      dateUpdated: Date;
+    }[];
+  }> {
+    const user = WebSession.getUser(session);
+    const parsedCollectionId: ObjectId = parseInputAsObjectId(collectionId);
+
+    await CollectionAccessControl.assertHasAccess(user, parsedCollectionId);
+
+    const collectionIsPublic: boolean = await CollectionAccessControl.isPublic(parsedCollectionId);
+    const userIds: ObjectId[] = await CollectionAccessControl.getUsersWithRestrictedAccess(parsedCollectionId);
+    const userInfoProcesses = userIds.map((userId) => User.getUserById(userId));
+    const usersWithExplicitAccess = await Promise.all(userInfoProcesses);
+    return { isPublic: collectionIsPublic, usersWithExplicitAccess: usersWithExplicitAccess };
   }
 }
 

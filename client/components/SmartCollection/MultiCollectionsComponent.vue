@@ -6,9 +6,9 @@ import { storeToRefs } from "pinia";
 
 const { currentUsername } = storeToRefs(useUserStore());
 
-const props = defineProps(["collections"]);
+const props = defineProps(["collections", "headerText"]);
 const collections = props.collections;
-const username = collections[0].owner;
+const username = collections[0] ? collections[0].owner : undefined;
 
 const collectionIdParam = ref("");
 const songIdParam = ref("");
@@ -45,7 +45,7 @@ interface SongCollectionDoc {
 
 <template>
   <div>
-    <h3>Collections</h3>
+    <h3>{{ $props.headerText }}</h3>
     <div class="collections-container">
       <RouterLink v-for="collection in collections" :key="collection._id" style="text-decoration: none" :to="{ name: 'SmartCollection', params: { id: collection._id } }">
         <div :key="collection._id" class="collection-block">
