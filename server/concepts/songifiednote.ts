@@ -6,7 +6,7 @@ export interface SongifiedNoteDoc extends BaseDoc {
   rawNote: string;
   generatedLyrics: string;
   lyricsTemplate: string;
-  backgroundMusic: string; //link to the songs on the server
+  backgroundMusicLink: string; //link to the songs on the server
   // quizCard: string; //actually let's omit this
 }
 

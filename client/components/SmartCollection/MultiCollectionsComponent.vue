@@ -8,7 +8,7 @@ const { currentUsername } = storeToRefs(useUserStore());
 
 const props = defineProps(["collections"]);
 const collections = props.collections;
-const username = collections[0].owner; 
+const username = collections[0].owner;
 
 const collectionIdParam = ref("");
 const songIdParam = ref("");
@@ -41,7 +41,6 @@ interface SongCollectionDoc {
 //     alert("Error adding song to collection");
 //   }
 // }
-
 </script>
 
 <template>
@@ -51,8 +50,7 @@ interface SongCollectionDoc {
       <RouterLink v-for="collection in collections" :key="collection._id" style="text-decoration: none" :to="{ name: 'SmartCollection', params: { id: collection._id } }">
         <div :key="collection._id" class="collection-block">
           <span class="title">{{ collection.title }}</span>
-          {{ collection.songifiedNotes.length }} Songs
-          <br>By {{ collection.owner }}
+          {{ collection.songifiedNotes.length }} Songs <br />By {{ collection.owner }}
           <p>
             <span class="description">{{ collection.description }}</span>
           </p>
