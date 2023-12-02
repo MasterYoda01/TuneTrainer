@@ -282,7 +282,25 @@ class Routes {
     });
     const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
 
-    return { msg: "Success", collections: Responses.collections(accessibleCollections) };
+    return Responses.collections(accessibleCollections);
+  }
+
+  /**
+   *
+   *
+   * @param session of a user
+   * @returns the collections that the user has access to (that aren't public)
+   */
+  @Router.get("/other_users/accessible_collections")
+  async getAccessibleCollectionsFromOtherUsers(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getContentSharedWithUser(user)).map((id) => {
+      return SongCollection.getCollectionById(id);
+    });
+    const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
+    const collectionsByOthers = accessibleCollections.filter((collection) => !idsAreEqual(collection.owner, user));
+
+    return Responses.collections(collectionsByOthers);
   }
 
   /**
