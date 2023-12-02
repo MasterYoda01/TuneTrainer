@@ -26,5 +26,4 @@ const audioSrc = computed(() => {
   </section>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
