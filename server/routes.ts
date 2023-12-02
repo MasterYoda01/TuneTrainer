@@ -195,7 +195,7 @@ class Routes {
     return { msg: "Got Songified Notes by Author!", songNote: songNote };
   }
 
-  @Router.get("/songifiednotes/author/:songId")
+  @Router.get("/songifiednotes/id/:songId")
   async getSongifiedNotesBySongId(songId: string) {
     const songNote = await SongifiedNote.getSongifiedNoteBySongId(new ObjectId(songId));
     return { msg: "Got Songified Note by _id!", songNote: songNote };

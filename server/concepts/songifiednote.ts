@@ -18,22 +18,22 @@ export default class SongifiedNoteConcept {
   }
 
   async deleteSongifiedNote(_id: string) {
-    return this.songifiednotes.deleteOne({ _id: new ObjectId(_id) });
+    return await this.songifiednotes.deleteOne({ _id: new ObjectId(_id) });
   }
 
   async editGeneratedLyrics(_id: string, newLyrics: string) {
-    return this.songifiednotes.updateOne({ _id: new ObjectId(_id) }, { generatedLyrics: newLyrics });
+    return await this.songifiednotes.updateOne({ _id: new ObjectId(_id) }, { generatedLyrics: newLyrics });
   }
 
   async editRawNote(_id: string, newRawNote: string) {
-    return this.songifiednotes.updateOne({ _id: new ObjectId(_id) }, { rawNote: newRawNote });
+    return await this.songifiednotes.updateOne({ _id: new ObjectId(_id) }, { rawNote: newRawNote });
   }
 
   async getSongifiedNotesByAuthor(authorId: string) {
-    return this.songifiednotes.readMany({ author: new ObjectId(authorId) });
+    return await this.songifiednotes.readMany({ author: new ObjectId(authorId) });
   }
 
   async getSongifiedNoteBySongId(songId: ObjectId) {
-    return this.songifiednotes.readOne({ _id: songId });
+    return await this.songifiednotes.readOne({ _id: songId });
   }
 }
