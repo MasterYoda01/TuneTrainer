@@ -5,13 +5,14 @@ import { storeToRefs } from "pinia";
 import { defineProps, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { fetchy } from "../../utils/fetchy";
+import AccessControlManager from "../AccessControl/AccessControlManager.vue";
 
 const userStore = useUserStore();
 const { currentUsername } = storeToRefs(userStore);
 const following = ref<string[]>([]);
 
 const props = defineProps(["collection"]);
-const collection = props.collection; 
+const collection = props.collection;
 
 interface SmartCollection {
   _id: string;
@@ -101,9 +102,10 @@ onMounted(async () => {
       </div>
     </div>
   </div> -->
-  <h2>{{ collection.title}}</h2>
+  <h2>{{ collection.title }}</h2>
   <span class="author">By {{ collection.owner }}</span>
-  <span style="float: right;color: #999;">Updated {{ moment(collection.dateUpdated).format("MM/DD/YY") }}</span>
+  <span style="float: right; color: #999">Updated {{ moment(collection.dateUpdated).format("MM/DD/YY") }}</span>
+  <div class="access-manage" v-if="collection.owner"><AccessControlManager v-bind:contentId="collection._id" /></div>
   <p class="description">{{ collection.description }}</p>
   <section class="song-notes-container">
     <div v-for="note in collection.songifiedNotes">
@@ -115,32 +117,31 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-h2{
-  color: #5CB48C;
+h2 {
+  color: #5cb48c;
   font-size: 40px;
 }
-.description{
+.description {
   color: #999;
 }
-.author{
+.author {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
-.song-notes-container{
+.song-notes-container {
   column-count: 3;
   column-gap: 2em;
   margin-top: 3em;
   flex-wrap: nowrap;
 }
-.song-note{
+.song-note {
   flex-wrap: wrap;
   background-color: #fff;
   border: solid 1px #999;
   padding: 3% 5%;
   border-radius: 9px;
 }
-
 
 .feed-row {
   width: 50%;

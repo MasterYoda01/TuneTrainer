@@ -77,7 +77,7 @@ onBeforeMount(async () => {
 
 const getUsersCollections = async () => {
   try {
-    const response = await fetchy(`/api/collections/${currentUsername.value}`, "GET", {});
+    const response = await fetchy(`/api/users/${currentUsername.value}/collections`, "GET", {});
     console.log(response);
     userCollections.value = response;
   } catch (error) {
