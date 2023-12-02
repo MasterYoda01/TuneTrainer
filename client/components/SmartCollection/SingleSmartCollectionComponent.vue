@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SongifiedNoteComponent from "@/components/SongifiedNote/SongifiedNoteComponent.vue";
 import { useUserStore } from "@/stores/user";
 import moment from "moment";
 import { storeToRefs } from "pinia";
@@ -11,7 +12,7 @@ const { currentUsername } = storeToRefs(userStore);
 const following = ref<string[]>([]);
 
 const props = defineProps(["collection"]);
-const collection = props.collection; 
+const collection = props.collection;
 
 interface SmartCollection {
   _id: string;
@@ -101,46 +102,46 @@ onMounted(async () => {
       </div>
     </div>
   </div> -->
-  <h2>{{ collection.title}}</h2>
+  <h2>{{ collection.title }}</h2>
   <span class="author">By {{ collection.owner }}</span>
-  <span style="float: right;color: #999;">Updated {{ moment(collection.dateUpdated).format("MM/DD/YY") }}</span>
+  <span style="float: right; color: #999">Updated {{ moment(collection.dateUpdated).format("MM/DD/YY") }}</span>
   <p class="description">{{ collection.description }}</p>
   <section class="song-notes-container">
     <div v-for="note in collection.songifiedNotes">
+      <!--PROMI: create a component for a songified note, import it & pass note in this component-->
       <div class="song-note">
-        {{ note }}
+        <SongifiedNoteComponent />
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-h2{
-  color: #5CB48C;
+h2 {
+  color: #5cb48c;
   font-size: 40px;
 }
-.description{
+.description {
   color: #999;
 }
-.author{
+.author {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
-.song-notes-container{
+.song-notes-container {
   column-count: 3;
   column-gap: 2em;
   margin-top: 3em;
   flex-wrap: nowrap;
 }
-.song-note{
+.song-note {
   flex-wrap: wrap;
   background-color: #fff;
   border: solid 1px #999;
   padding: 3% 5%;
   border-radius: 9px;
 }
-
 
 .feed-row {
   width: 50%;
