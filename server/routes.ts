@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { CollectionAccessControl, SongCollection, SongifiedNote, User, WebSession } from "./app";
+import { CollectionAccessControl, SongCollection, SongifiedNote, StudyTool, User, WebSession } from "./app";
 import { SongCollectionDoc } from "./concepts/songcollection";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -63,23 +63,19 @@ class Routes {
     // const generatedLyrics = await generateSongLyrics(rawNote, lyricsTemplate);
 
     // TEST LYRICS
-    const generatedLyrics = `The lab isn't the best place to find an answer\n
-    So the classroom is where I go\n
-    Me and my peers at the desks, drawing shapes\n
-    Sketching fast and then we analyze slow\n
-    Come over and start up a discussion with just me\n
-    And trust me, I'll give it a chance now\n
-    Take your model, stop, put it on the table\n
-    And then we start to bond, and now we're talking like\n
-    Chem, you know I want your shape\n
-    Your shape predicts how molecules will be\n
-    Come on now, follow my lead\n
-    I may be curious, don't mind me\n
-    Say, girl, let's not talk too much\n
-    Draw on my paper and put that theory in me\n
-    Come on now, follow my lead\n
-    Come, come on now, follow my lead\n
-    I'm in love with the VSEPR, you see`;
+    const generatedLyrics = `
+    And trust me, it's more than just acid rain.\n
+    Pour the solution, watch, as colors change,\n
+    In the world of atoms, isn't it strange?\n
+    Chem, you know I love your bonds,\n
+    From ionic to covalent, it all responds.\n
+    Let's not wait, stir up the chemical sea,\n
+    I'm fascinated, with reactions, let's agree.\n
+    Hey, let's decode molecular speech,\n
+    Write down the formula, let's each teach.\n
+    Come now, stir up the elemental creed,\n
+    Come, come now, in the periodic table we read,\n
+    I'm in love with chemistry, indeed.\n`;
 
     if (generatedLyrics) {
       const user = WebSession.getUser(session);
@@ -195,10 +191,27 @@ class Routes {
     return { msg: "Got Songified Notes by Author!", songNote: songNote };
   }
 
-  @Router.get("/songifiednotes/author/:songId")
+  @Router.get("/songifiednotes/bysongid/:songId")
   async getSongifiedNotesBySongId(songId: string) {
     const songNote = await SongifiedNote.getSongifiedNoteBySongId(new ObjectId(songId));
-    return { msg: "Got Songified Note by _id!", songNote: songNote };
+    return songNote;
+  }
+
+  // STUDY TOOL CONCEPT
+
+  @Router.get("/studytool/:collectionId")
+  async getStudyToolCollection(collectionId: string) {
+    //get all the song notes in this collection
+    const collection = await SongCollection.getCollectionById(new ObjectId(collectionId));
+    const studyToolColl = await StudyTool.getStudyToolCollection(new ObjectId(collectionId), collection.songifiedNotes);
+    return studyToolColl;
+  }
+
+  @Router.post("/studytool/")
+  async updateStudyToolCollectionScores(collectionId: string, results: Array<{ songNoteId: string; coeff: number }>) {
+    console.log("Type of newCoeffs:", typeof results, Array.isArray(results));
+
+    return await StudyTool.updateStudyToolCollectionScores(new ObjectId(collectionId), results);
   }
 
   /**

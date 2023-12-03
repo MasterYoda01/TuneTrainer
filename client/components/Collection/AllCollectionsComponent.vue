@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from "vue";
+import { ref } from "vue";
 
 interface Collection {
   _id: string;
@@ -11,17 +11,6 @@ interface Collection {
 const allCollections = ref<Collection[]>([]);
 
 const collectionContainer = ref<HTMLElement | null>(null);
-
-onMounted(async () => {
-  await nextTick(); // Wait until the DOM updates
-
-  const blocks = collectionContainer.value?.querySelectorAll(".smart-collection-block");
-
-  blocks?.forEach((block) => {
-    const randomColor1 = "#" + Math.floor(Math.random() * 16777215).toString(16);
-    (block as HTMLElement).style.border = `1px solid ${randomColor1}`;
-  });
-});
 </script>
 
 <template>

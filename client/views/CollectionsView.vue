@@ -21,7 +21,6 @@ const sharedCollections = ref<Array<Record<string, string>>>([]);
 onBeforeMount(async () => {
   try {
     const response = await fetchy(`/api/users/${user.value}/collections`, "GET", {});
-    console.log("smart collections view", response);
     collections.value = response;
     const sharedResponse = await fetchy(`/api/other_users/accessible_collections`, "GET");
     sharedCollections.value = sharedResponse;

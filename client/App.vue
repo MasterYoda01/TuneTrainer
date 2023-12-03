@@ -26,7 +26,8 @@ onBeforeMount(async () => {
       <nav>
         <div class="nav-buttons">
           <!-- <p @click="$router.push({ name: 'Feed' })" :class="{ active: currentRouteName == 'Feed' }">SmartFeed</p> -->
-          <p @click="$router.push({ name: 'Collections', params: { user: currentUsername} })" :class="{ active: currentRouteName == 'Collections' }">Collections</p>
+          <p @click="$router.push({ name: 'Collections', params: { user: currentUsername } })" :class="{ active: currentRouteName == 'Collections' }">Collections</p>
+          <p @click="$router.push({ name: 'StudyTool' })" :class="{ active: currentRouteName == 'StudyTool' }">Study Tool</p>
           <p @click="$router.push({ name: 'GenerateSong' })" :class="{ active: currentRouteName == 'GenerateSong' }">Generate Song</p>
           <p @click="$router.push({ name: 'Settings' })" :class="{ active: currentRouteName == 'Settings' }">Settings</p>
         </div>
@@ -75,17 +76,15 @@ nav {
   font-size: 15px;
   padding: 5px 9px;
 }
-.nav-buttons p:hover{
+.nav-buttons p:hover {
   background-color: #fff;
-  border: solid 2px #5CB48C;
+  border: solid 2px #5cb48c;
   border-radius: 8px;
   padding: 3px 7px;
 }
 .nav-buttons p.active {
-  background-color: #5CB48C;
+  background-color: #5cb48c;
   color: #fff;
   border-radius: 8px;
 }
-
-
 </style>
