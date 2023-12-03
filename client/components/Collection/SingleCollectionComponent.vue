@@ -6,6 +6,7 @@ import AccessControlManager from "../AccessControl/AccessControlManager.vue";
 import InnerCollectionComponent from "../SongifiedNote/InnerCollectionComponent.vue";
 
 const props = defineProps(["collection"]);
+const emit = defineEmits(["refreshCollections"]);
 const collection = props.collection;
 const songifiedNotes = ref<Array<Record<string, string>>>([]);
 
@@ -19,6 +20,7 @@ async function getSongNotesOfCollection(collection_id: string) {
 
 onBeforeMount(async () => {
   await getSongNotesOfCollection(collection._id);
+  emit("refreshCollections");
 });
 </script>
 
@@ -30,7 +32,7 @@ onBeforeMount(async () => {
   <p class="description">{{ collection.description }}</p>
   <section class="song-notes-container">
     <div v-for="note in songifiedNotes" :key="note._id">
-      <RouterLink class="song-note-link" :to="{ name: 'SongNote', params: { id: note._id } }">
+      <RouterLink class="song-note-link" @refreshInnerCollections="getSongNotesOfCollection" :to="{ name: 'SongNote', params: { id: note._id } }">
         <InnerCollectionComponent :songifiedNote="{ backgroundMusicLink: note.backgroundMusicLink, generatedLyrics: note.generatedLyrics }" />
       </RouterLink>
     </div>

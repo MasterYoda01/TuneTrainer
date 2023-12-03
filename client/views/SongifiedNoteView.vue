@@ -5,17 +5,13 @@ import { onBeforeMount, ref } from "vue";
 import { fetchy } from "../utils/fetchy";
 
 const note_id = ref(router.currentRoute.value.params.id);
-console.log(note_id.value);
 const note = ref<Record<string, string>>({});
 const loaded = ref(false);
 
 onBeforeMount(async () => {
   loaded.value = false;
   try {
-    console.log("what");
-
     note.value = (await fetchy(`/api/songifiednotes/id/${note_id.value}`, "GET", {})).songNote;
-    console.log(note.value);
   } catch (error) {
     console.log(error);
   } finally {

@@ -91,7 +91,7 @@ class Routes {
     }
   }
 
-  @Router.delete("/delete/songifiednote")
+  @Router.delete("/delete/songifiednote/:_id")
   async deleteSongifiedNote(session: WebSessionDoc, _id: string) {
     const user = WebSession.getUser(session);
     await SongifiedNote.isAuthor(user, new ObjectId(_id));
@@ -154,12 +154,14 @@ class Routes {
     return songNotesArray;
   }
 
-  // @Router.delete("/collections/:_id")
-  // async deleteCollection(session: WebSessionDoc, _id: ObjectId) {
-  //   const user = WebSession.getUser(session);
-  //   await SongCollection.isOwner(user, _id);
-  //   return SongCollection.deleteCollection(_id);
-  // }
+  @Router.delete("/collections/:_id")
+  async deleteCollection(session: WebSessionDoc, _id: string) {
+    const user = WebSession.getUser(session);
+    const parsedCollectionId: ObjectId = parseInputAsObjectId(_id);
+
+    await SongCollection.isOwner({ user, _id: parsedCollectionId });
+    return SongCollection.deleteCollection(_id);
+  }
 
   // @Router.patch("/collections/remove/one/:songifiedNote")
   // async deleteNoteFromCollection(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
