@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import router from "@/router";
 import { ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
@@ -6,19 +7,18 @@ const titleParam = ref("");
 const descriptionParam = ref("");
 
 async function createCollection() {
-  try {
-    let title = titleParam.value;
-    let description = descriptionParam.value;
+  
+  let title = titleParam.value;
+  let description = descriptionParam.value;
 
-    let query = { title, description };
+  let query = { title, description };
 
-    const response = await fetchy(`/api/create/collection`, "POST", { query });
+  const response = await fetchy(`/api/create/collection`, "POST", { query });
+  void router.push({ name: "Collection", params: {id: response._id} });
 
-    alert(`Collection created: ${response.msg}`);
-    // Refresh collections list or handle response
-  } catch (error) {
-    alert("Error creating collection");
-  }
+  //alert(`Collection created: ${response.msg}`);
+  // Refresh collections list or handle response
+  
 }
 </script>
 

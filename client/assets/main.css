@@ -105,6 +105,22 @@ h6 {
   letter-spacing: 1px;
 }
 
+audio::-webkit-media-controls-mute-button{
+  border-radius: 25px;
+  background-color: #5cb48c;
+}
+audio{
+  flex-grow: 1;
+  background-color: #f0f2f5;
+  border: solid 1px #999;
+  border-radius: 30px;
+  vertical-align: middle;
+}
+audio::-webkit-media-controls-play-button{
+  border-radius: 25px;
+  background-color: #5cb48c;
+}
+
 .global-button-blue {
   background-color: #d9cafa;
   color: black;
