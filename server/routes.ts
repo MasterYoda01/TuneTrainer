@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { CollectionAccessControl, SongCollection, SongifiedNote, User, WebSession } from "./app";
+import { CollectionAccessControl, SongCollection, SongifiedNote, StudyTool, User, WebSession } from "./app";
 import { SongCollectionDoc } from "./concepts/songcollection";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -87,10 +87,8 @@ class Routes {
     }
   }
 
-  @Router.delete("/delete/songifiednote/:_id")
-  async deleteSongifiedNote(session: WebSessionDoc, _id: string) {
-    const user = WebSession.getUser(session);
-    await SongifiedNote.isAuthor(user, new ObjectId(_id));
+  @Router.delete("/delete/songifiednote")
+  async deleteSongifiedNote(_id: string) {
     await SongifiedNote.deleteSongifiedNote(_id);
     return { msg: "Songified note deleted!" };
   }
@@ -150,14 +148,12 @@ class Routes {
     return songNotesArray;
   }
 
-  @Router.delete("/collections/:_id")
-  async deleteCollection(session: WebSessionDoc, _id: string) {
-    const user = WebSession.getUser(session);
-    const parsedCollectionId: ObjectId = parseInputAsObjectId(_id);
-
-    await SongCollection.isOwner({ user, _id: parsedCollectionId });
-    return SongCollection.deleteCollection(_id);
-  }
+  // @Router.delete("/collections/:_id")
+  // async deleteCollection(session: WebSessionDoc, _id: ObjectId) {
+  //   const user = WebSession.getUser(session);
+  //   await SongCollection.isOwner(user, _id);
+  //   return SongCollection.deleteCollection(_id);
+  // }
 
   // @Router.patch("/collections/remove/one/:songifiedNote")
   // async deleteNoteFromCollection(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
@@ -200,6 +196,29 @@ class Routes {
     const songNote = await SongifiedNote.getSongifiedNoteBySongId(new ObjectId(songId));
     console.log(await Responses.songnote(songNote));
     return { msg: "Got Songified Note by _id!", songNote: await Responses.songnote(songNote) };
+  }
+
+  @Router.get("/songifiednote/bysongid/:songId")
+  async getSingleSongifiedNoteBySongId(songId: string) {
+    const songNote = await SongifiedNote.getSongifiedNoteBySongId(new ObjectId(songId));
+    return songNote;
+  }
+
+  // STUDY TOOL CONCEPT
+
+  @Router.get("/studytool/:collectionId")
+  async getStudyToolCollection(collectionId: string) {
+    //get all the song notes in this collection
+    const collection = await SongCollection.getCollectionById(new ObjectId(collectionId));
+    const studyToolColl = await StudyTool.getStudyToolCollection(new ObjectId(collectionId), collection.songifiedNotes);
+    return studyToolColl;
+  }
+
+  @Router.post("/studytool/")
+  async updateStudyToolCollectionScores(collectionId: string, results: Array<{ songNoteId: string; coeff: number }>) {
+    console.log("Type of newCoeffs:", typeof results, Array.isArray(results));
+
+    return await StudyTool.updateStudyToolCollectionScores(new ObjectId(collectionId), results);
   }
 
   /**
@@ -297,22 +316,6 @@ class Routes {
     const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
 
     return Responses.collections(accessibleCollections);
-  }
-
-  /**
-   *
-   *
-   * @param session of a user
-   * @returns the collections that the user has access to (that aren't public)
-   */
-  @Router.get("/public_collections")
-  async getPublicCollections() {
-    const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getPublicContent()).map((id) => {
-      return SongCollection.getCollectionById(id);
-    });
-    const publicCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
-
-    return Responses.collections(publicCollections);
   }
 
   /**
