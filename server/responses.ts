@@ -2,6 +2,7 @@ import { User } from "./app";
 import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError } from "./concepts/friend";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/post";
 import { SongCollectionDoc } from "./concepts/songcollection";
+import { SongifiedNoteDoc } from "./concepts/songifiednote";
 import { Router } from "./framework/router";
 
 /**
@@ -39,6 +40,17 @@ export default class Responses {
     return { ...collection, owner: author.username };
   }
 
+  /**
+   * calculates author from author id
+   * @param songnote calculated songnote
+   */
+  static async songnote(songnote: SongifiedNoteDoc | null){
+    if (!songnote) {
+      return songnote;
+    }
+    const author = await User.getUserById(songnote.author);
+    return { ...songnote, author: author.username };
+  }
   /**
    * Same as {@link collection} but for an array of SongCollectionDoc for improved performance.
    */

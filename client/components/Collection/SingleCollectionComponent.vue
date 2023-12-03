@@ -30,7 +30,7 @@ onBeforeMount(async () => {
   <p class="description">{{ collection.description }}</p>
   <section class="song-notes-container">
     <div v-for="note in songifiedNotes" :key="note._id">
-      <RouterLink class="song-note" :to="{ name: 'SongNote', params: { id: note._id } }">
+      <RouterLink class="song-note-link" :to="{ name: 'SongNote', params: { id: note._id } }">
         <InnerCollectionComponent :songifiedNote="{ backgroundMusicLink: note.backgroundMusicLink, generatedLyrics: note.generatedLyrics }" />
       </RouterLink>
     </div>
@@ -53,15 +53,14 @@ h2 {
 .song-notes-container {
   display: flex;
   flex-wrap: wrap;
-  margin-top: 3em;
+  margin-top: 2em;
   gap: 2em;
 }
 
-.song-note {
+.song-note-link {
   color: #000;
   text-decoration: none;
 }
-
 .feed-row {
   width: 50%;
 }
