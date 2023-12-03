@@ -135,44 +135,50 @@ onBeforeMount(async () => {
     </template>
 
     <template v-slot:default="{ isActive }">
-      <v-card title="Share">
-        <div class="field">
-          <p class="collectionObjectName">
-            Collection: <b>{{ objectOfAccessControl.name }}</b>
-          </p>
+      <v-card>
+        <div class="access-controler-content">
+          <div class="field">
+            <h1 class="collectionObjectName">
+              Share "<b>{{ objectOfAccessControl.name }}</b
+              >"
+            </h1>
 
-          <label>
-            Add a user:
-            <v-text-field label="Username" v-model="subjectOfAccessControlName" />
-          </label>
-        </div>
-        <v-btn
-          color="teal-lighten-3"
-          v-bind:disabled="disableAccessControlButtons"
-          @click="() => grantSubjectAccessToObject({ subject: subjectOfAccessControlName, object: objectOfAccessControl.id })"
-        >
-          Grant access
-        </v-btn>
-        <v-btn
-          color="red-lighten-4"
-          v-bind:disabled="disableAccessControlButtons"
-          @click="() => removeSubjectAccessToObject({ subject: subjectOfAccessControlName, object: objectOfAccessControl.id })"
-        >
-          Remove access
-        </v-btn>
-        <!--show current state-->
-        <div class="peopleWithAcces">
-          <h3>People with Access:</h3>
-          <ul>
-            <li v-for="user in accessControl.usersWithExplicitAccess" :key="user._id">{{ user.username }}</li>
-          </ul>
-        </div>
-        <div class="general_access">
-          <h3>General access:</h3>
-          <p>Is Public? {{ accessControl.isPublic }}</p>
-          <div class="options_for_general_access">
-            <v-btn color="teal-lighten-3" v-bind:disabled="disableAccessControlButtons" @click="() => makePublic()"> Anyone with link can view </v-btn>
-            <v-btn color="teal-lighten-1" v-bind:disabled="disableAccessControlButtons" @click="() => makeRestricted()"> Restricted to people with access </v-btn>
+            <label>
+              Add a user:
+              <v-text-field label="Username" v-model="subjectOfAccessControlName" />
+            </label>
+          </div>
+          <v-btn
+            color="teal-lighten-3"
+            v-bind:disabled="disableAccessControlButtons"
+            @click="() => grantSubjectAccessToObject({ subject: subjectOfAccessControlName, object: objectOfAccessControl.id })"
+          >
+            Grant access
+          </v-btn>
+
+          <!--show current state-->
+          <div class="peopleWithAcces">
+            <h3>People with Access:</h3>
+            <ul>
+              <li v-for="user in accessControl.usersWithExplicitAccess" :key="user._id">
+                <div class="access-user">
+                  <p>{{ user.username }}</p>
+                  <v-btn color="red-lighten-4" v-bind:disabled="disableAccessControlButtons" @click="() => removeSubjectAccessToObject({ subject: user.username, object: objectOfAccessControl.id })">
+                    Remove
+                  </v-btn>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="general_access">
+            <h3>General access:</h3>
+            <p>Is Public? {{ accessControl.isPublic }}</p>
+            <div class="options_for_general_access">
+              <span>
+                <v-btn color="teal-lighten-3" v-bind:disabled="disableAccessControlButtons" @click="() => makePublic()"> Allow anyone with link </v-btn>
+                <v-btn color="teal-lighten-1" v-bind:disabled="disableAccessControlButtons" @click="() => makeRestricted()"> Restrict to people with access </v-btn>
+              </span>
+            </div>
           </div>
         </div>
 
@@ -204,6 +210,25 @@ onBeforeMount(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.access-controler-content {
+  padding: 2rem;
+}
+
+.access-user {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 1rem;
+  width: 100%;
+}
+
+.access-widget {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 1rem;
 }
 
 .accessControlManager .popup-content {
