@@ -8,7 +8,6 @@ import { fetchy } from "../../utils/fetchy";
 const userStore = useUserStore();
 const { currentUsername } = storeToRefs(userStore);
 
-const mounted = ref(false);
 const userNotes = ref("");
 const apiResponse = ref("");
 const errorMessage = ref("");
@@ -28,19 +27,16 @@ const editMode = ref(false); //some buttons should NOT be visible before and aft
 const chosenTemplate = ref("");
 const chosenSong = ref("");
 const editedLyrics = ref("");
+const backgroundSongPath = ref("");
 const noteID = ref(""); //AFTER WE SUBMIT CALL TO SONGIFY
 
 // DEFAULT FOR NOW:
 const templates = ref([
   {
-    title: "Shape of You",
+    title: "Moves Like Jagger",
     lyrics:
-      "Song - Ed Sheeran. Shape of You. The club isnt the best place to find a lover So the bar is where I go Me and my friends at the table doing shots Drinking fast and then we talk slow Come over and start up a conversation with just me And trust me I ll give it a chance now Take my hand, stop, put Van the Man on the jukebox And then we start to dance, and now I m singing like Girl, you know I want your love Your love was handmade for somebody like me Come on now, follow my lead I may be crazy, don t mind me Say, boy, let s not talk too much Grab on my waist and put that body on me Come on now, follow my lead Come, come on now, follow my leadl",
-  },
-  {
-    title: "Set Fire to the Rain",
-    lyrics:
-      "Song - Adele. Set Fire to the Rain. I let it fall, my heart And as it fell, you rose to claim it It was dark and I was over Until you kissed my lips and you saved me My hands, they're strong But my knees were far too weak To stand in your arms Without falling to your feet But there's a side to you That I never knew, never knew All the things you'd say They were never true, never true And the games you play You would always win, always win But I set fire to the rain Watched it pour as I touched your face Well, it burned while I cried 'Cause I heard it screaming out your name Your name",
+      "Oh, na, oh Just shoot for the stars, if it feels right Then aim for my heart, if you feel like And take me away And make it okay I swear, I'll behave You wanted control, so we waited I put on a show, now we're naked You say, I'm a kid My ego is big I don't give a shit And it goes like this take me by the tongue, and I'll know you (Ah) kiss me till you're drunk, and I'll show you All the moves like Jagger I've got the moves like Jagger I've got the moo-oo-oo-ooves like Jagger I don't need try to control you (Ah) look into my eyes, and I'll own you With them the moves like Jagger I've got the moves like Jagger I've got the moo-oo-oo-ooves like Jagger",
+    path: "/songs/moves_like_jagger.mp3",
   },
 ]);
 
@@ -56,9 +52,9 @@ const submitNotes = async () => {
   try {
     let rawNote = userNotes.value;
     let template = chosenTemplate.value;
-    let query = { rawNote, template };
+    let backgroundMusicLink = backgroundSongPath.value;
+    let query = { rawNote, template, backgroundMusicLink };
     const response = await fetchy(`/api/generate/songifiednote`, "POST", { query });
-    console.log(response);
     apiResponse.value = response.songifiednote.generatedLyrics;
     noteID.value = response.songifiednote._id;
   } catch (error) {
@@ -78,16 +74,17 @@ onBeforeMount(async () => {
 const getUsersCollections = async () => {
   try {
     const response = await fetchy(`/api/users/${currentUsername.value}/collections`, "GET", {});
-    console.log(response);
+    console.log("user collection", response);
     userCollections.value = response;
   } catch (error) {
     console.error("Error getting collection notes:", error);
   }
 };
 
-const changeTemplate = async (lyrics: string, title: string) => {
+const changeTemplate = async (lyrics: string, title: string, path: string) => {
   chosenTemplate.value = lyrics;
   chosenSong.value = title;
+  backgroundSongPath.value = path;
   //in an ideal world we do a request to load template, or have it loaded already
 };
 
@@ -109,7 +106,7 @@ const finalSave = async () => {
 
     let query = { collection_id: chosenCollection.value._id, songifiedNoteToAdd: noteID.value };
     await fetchy("/api/collection/add/", "PATCH", { query });
-    void router.push({ name: "Collections" });
+    void router.push({ name: "Collection", params: { id: chosenCollection.value._id } });
   } else {
     alert("Must choose collection to add to first");
   }
@@ -127,7 +124,7 @@ const finalSave = async () => {
           {{ chosenSong ? chosenSong : "Choose Tune" }}
           <div class="template-dropdown">
             <div v-for="temp in templates" :key="temp.lyrics">
-              <button class="song-template" @click="changeTemplate(temp.lyrics, temp.title)">
+              <button class="song-template" @click="changeTemplate(temp.lyrics, temp.title, temp.path)">
                 {{ temp.title }}
               </button>
             </div>
