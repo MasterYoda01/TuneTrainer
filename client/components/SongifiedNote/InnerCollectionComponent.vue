@@ -22,14 +22,12 @@ const audioSrc = computed(() => {
   <section class="inner-comp">
     <!-- Audio Player -->
     <div v-if="songifiedNote" class="lyrics">{{ songifiedNote.generatedLyrics }}</div>
-    <audio v-if="audioSrc" controls :src="audioSrc" type="audio/mpeg" id="music" preload="auto">
-      Your browser does not support the audio element.
-    </audio>
+    <audio v-if="audioSrc" controls :src="audioSrc" type="audio/mpeg" id="music" preload="auto">Your browser does not support the audio element.</audio>
   </section>
 </template>
 
 <style scoped>
-.lyrics{
+.lyrics {
   font-size: 18px;
   width: 75%;
   border-right: solid 2px #999;
@@ -37,14 +35,14 @@ const audioSrc = computed(() => {
   text-align: justify;
   padding-right: 4%;
 }
-.inner-comp{
+.inner-comp {
   background-color: #fff;
   padding: 3% 4%;
   border: solid 1px #999;
   border-radius: 15px;
   display: flex;
 }
-.inner-comp::hover{
+.inner-comp::hover {
   background-color: #5cb48c;
 }
 </style>

@@ -106,7 +106,7 @@ const finalSave = async () => {
 
     let query = { collection_id: chosenCollection.value._id, songifiedNoteToAdd: noteID.value };
     await fetchy("/api/collection/add/", "PATCH", { query });
-    void router.push({ name: "Collection", params: {id: chosenCollection.value._id}});
+    void router.push({ name: "Collection", params: { id: chosenCollection.value._id } });
   } else {
     alert("Must choose collection to add to first");
   }

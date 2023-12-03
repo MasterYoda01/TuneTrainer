@@ -2,40 +2,46 @@
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { computed, defineProps, ref } from "vue";
+import { fetchy } from "../../utils/fetchy";
 
+const loading = ref(false);
 const props = defineProps(["note"]);
 const note = props.note;
 const userStore = useUserStore();
 const { isLoggedIn, currentUsername } = storeToRefs(userStore);
 
-console.log(note);
 const audioSrc = computed(() => {
   return new URL(`${note.backgroundMusicLink}`, import.meta.url).href;
 });
-
+const canEdit = ref<boolean>(note.author === currentUsername.value);
 const deleteNote = async () => {
+  if (confirm("Are you sure you want to delete?")) {
+    let query = { _id: note._id };
+    await fetchy("/api/delete/songifiednote", "DELETE", { query });
+    window.history.go(); //refresh page
+  }
+};
+// const deleteNote = async () => {};
 
-}; 
-
-const canEdit = ref<boolean>(note.author === currentUsername.value); 
-console.log(canEdit.value, note.author, currentUsername.value);
+// const canEdit = ref<boolean>(note.author === currentUsername.value);
+// console.log(canEdit.value, note.author, currentUsername.value);
 </script>
 <template>
-    <div class="audio-container">
-        <button v-if="canEdit" class="trash" @click="deleteNote()">🗑️ </button>
-        <audio v-if="audioSrc" controls :src="audioSrc" type="audio/mpeg" id="music" preload="auto">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
+  <div class="audio-container">
+    <button v-if="canEdit" class="trash" @click="deleteNote()">🗑️</button>
+    <audio v-if="audioSrc" controls :src="audioSrc" type="audio/mpeg" id="music" preload="auto">Your browser does not support the audio element.</audio>
+  </div>
 
-    <div class="column-container">
+  <div class="column-container">
     <section class="notes">
-        {{ note.rawNote }}
+      <h3>Notes inputted</h3>
+      {{ note.rawNote }}
     </section>
     <section class="lyrics">
-        {{ note.generatedLyrics }}
+      <h3>Generated Song</h3>
+      {{ note.generatedLyrics }}
     </section>
-    </div>
+  </div>
   <!-- <span class="author">By {{ collection.owner }}</span>
   <span style="float: right; color: #999">Updated {{ moment(collection.dateUpdated).format("MM/DD/YY") }}</span>
   <div class="access-manage" v-if="collection.owner"><AccessControlManager v-bind:contentId="collection._id" /></div>
@@ -50,25 +56,26 @@ console.log(canEdit.value, note.author, currentUsername.value);
 </template>
 
 <style scoped>
-.column-container{
-    display: flex;
-    gap: 3%;
+.column-container {
+  display: flex;
+  gap: 3%;
 }
-.notes, .lyrics{
-    background-color: #fff;
-    border: solid 1px #999;
-    border-radius: 15px;
-    padding: 2% 2.5%;
-    width: 50%;
+.notes,
+.lyrics {
+  background-color: #fff;
+  border: solid 1px #999;
+  border-radius: 15px;
+  padding: 2% 2.5%;
+  width: 50%;
 }
-.audio-container{
-    text-align: right;
-    margin-bottom: 2%;
+.audio-container {
+  text-align: right;
+  margin-bottom: 2%;
 }
-.trash{
-    border-radius: 5px;
-    font-size: 20px;
-    padding: 0.25em;
-    margin-right: 0.5em;
+.trash {
+  border-radius: 5px;
+  font-size: 20px;
+  padding: 0.25em;
+  margin-right: 0.5em;
 }
 </style>

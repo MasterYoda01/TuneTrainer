@@ -92,7 +92,9 @@ class Routes {
   }
 
   @Router.delete("/delete/songifiednote")
-  async deleteSongifiedNote(_id: string) {
+  async deleteSongifiedNote(session: WebSessionDoc, _id: string) {
+    const user = WebSession.getUser(session);
+    await SongifiedNote.isAuthor(user, new ObjectId(_id));
     await SongifiedNote.deleteSongifiedNote(_id);
     return { msg: "Songified note deleted!" };
   }
