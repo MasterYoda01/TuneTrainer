@@ -43,7 +43,6 @@ onBeforeMount(async () => {
     <MultiCollectionsComponent v-if="loaded" :collections="collections" headerText="Collections" />
     <MultiCollectionsComponent v-if="loaded" :collections="sharedCollections" headerText="Shared Collections" />
     <MultiCollectionsComponent v-if="loaded" :collections="publicCollections" headerText="Public Collections" />
-    <AllSmartCollectionsComponent />
   </main>
 </template>
 
