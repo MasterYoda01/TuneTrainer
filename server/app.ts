@@ -3,6 +3,7 @@ import FriendConcept from "./concepts/friend";
 import PostConcept from "./concepts/post";
 import SongCollectionConcept from "./concepts/songcollection";
 import SongifiedNoteConcept from "./concepts/songifiednote";
+import StudyToolConcept from "./concepts/studytool";
 import UserConcept from "./concepts/user";
 import WebSessionConcept from "./concepts/websession";
 
@@ -13,4 +14,5 @@ export const Post = new PostConcept();
 export const Friend = new FriendConcept();
 export const SongCollection = new SongCollectionConcept();
 export const SongifiedNote = new SongifiedNoteConcept();
+export const StudyTool = new StudyToolConcept();
 export const CollectionAccessControl = new AccessControl("collection");

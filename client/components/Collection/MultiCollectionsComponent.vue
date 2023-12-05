@@ -3,6 +3,7 @@ import { defineProps, ref } from "vue";
 
 import { storeToRefs } from "pinia";
 import { useUserStore } from "../../stores/user";
+import { fetchy } from "../../utils/fetchy";
 
 const { currentUsername } = storeToRefs(useUserStore());
 
@@ -22,25 +23,14 @@ interface SongCollectionDoc {
   upvotes: number;
 }
 
-// // we will need this later in the code where a single collection is rendered
-// async function addSongToCollection() {
-//   try {
-//     let collectionId = collectionIdParam.value;
-//     let songId = songIdParam.value;
-
-//     const response = await fetchy(`/api/collection/add/`, "PATCH", {
-//       body: {
-//         collection_id: collectionId,
-//         songifiedNoteToAdd: songId,
-//       },
-//     });
-
-//     alert(`Song added to collection: ${response.msg}`);
-//     // Handle response or update UI accordingly
-//   } catch (error) {
-//     alert("Error adding song to collection");
-//   }
-// }
+const deleteCollection = async (collection_id: string, event: Event) => {
+  event.preventDefault();
+  if (confirm("Are you sure you want to delete the Collection?")) {
+    let query = { _id: collection_id };
+    await fetchy(`/api/collections/${collection_id}`, "DELETE", { query });
+    window.history.go(); //refresh page
+  }
+};
 </script>
 
 <template>
@@ -49,11 +39,16 @@ interface SongCollectionDoc {
     <div class="collections-container">
       <RouterLink v-for="collection in collections" :key="collection._id" style="text-decoration: none" :to="{ name: 'Collection', params: { id: collection._id } }">
         <div :key="collection._id" class="collection-block">
-          <span class="title">{{ collection.title }}</span>
-          {{ collection.songifiedNotes.length }} Songs <br />By {{ collection.owner }}
-          <p>
-            <span class="description">{{ collection.description }}</span>
-          </p>
+          <div class="collection-info">
+            <span class="title">{{ collection.title }}</span>
+            <div class="song-owner">
+              {{ collection.songifiedNotes.length }} Songs <br />By {{ collection.owner }}
+              <button class="trash" @click="deleteCollection(collection._id, $event)">🗑️</button>
+            </div>
+            <p>
+              <span class="description">{{ collection.description }}</span>
+            </p>
+          </div>
         </div>
       </RouterLink>
     </div>
@@ -71,7 +66,12 @@ h3 {
   flex-wrap: wrap;
   gap: 16px;
 }
-
+.trash {
+  border-radius: 5px;
+  font-size: 20px;
+  padding: 0.25em;
+  margin-right: 0.5em;
+}
 .title {
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -98,6 +98,7 @@ h3 {
   border-radius: 5px;
   padding: 4% 5%;
   flex-wrap: wrap;
+  position: relative;
 }
 
 .collection-block:hover {
@@ -110,5 +111,29 @@ h3 {
 
 .smart-collection-block:hover {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.song-owner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* Adjust as needed to create space between the line and the trash icon */
+  margin-bottom: 10px;
+}
+
+.trash {
+  border-radius: 5px;
+  font-size: 18px;
+  padding: 0.25em;
+  margin-right: 0.5em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  transition: color 0.3s ease-in-out;
+}
+
+.trash:hover {
+  color: #f00;
 }
 </style>

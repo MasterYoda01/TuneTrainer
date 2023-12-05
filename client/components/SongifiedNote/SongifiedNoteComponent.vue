@@ -6,25 +6,26 @@ import { fetchy } from "../../utils/fetchy";
 
 const loading = ref(false);
 const props = defineProps(["note"]);
+const emit = defineEmits(["refreshInnerCollections"]);
 const note = props.note;
 const userStore = useUserStore();
 const { isLoggedIn, currentUsername } = storeToRefs(userStore);
+
+console.log(note._id);
 
 const audioSrc = computed(() => {
   return new URL(`${note.backgroundMusicLink}`, import.meta.url).href;
 });
 const canEdit = ref<boolean>(note.author === currentUsername.value);
+
 const deleteNote = async () => {
   if (confirm("Are you sure you want to delete?")) {
     let query = { _id: note._id };
-    await fetchy("/api/delete/songifiednote", "DELETE", { query });
+    await fetchy(`/api/delete/songifiednote/${note._id}`, "DELETE");
     window.history.go(); //refresh page
+    emit("refreshInnerCollections");
   }
 };
-// const deleteNote = async () => {};
-
-// const canEdit = ref<boolean>(note.author === currentUsername.value);
-// console.log(canEdit.value, note.author, currentUsername.value);
 </script>
 <template>
   <div class="audio-container">

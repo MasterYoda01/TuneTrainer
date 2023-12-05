@@ -9,6 +9,7 @@ import LoginView from "../views/LoginView.vue";
 import SettingView from "../views/SettingView.vue";
 import SingleCollectionView from "../views/SingleCollectionView.vue";
 import SongifiedNoteView from "../views/SongifiedNoteView.vue";
+import StudyToolView from "../views/StudyToolView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -17,6 +18,13 @@ const router = createRouter({
       path: "/generatesong",
       name: "GenerateSong",
       component: GenerateSongView,
+      meta: { requiresAuth: true, breadcrumb: "GenerateSong" },
+    },
+
+    {
+      path: "/studytool",
+      name: "StudyTool",
+      component: StudyToolView,
       meta: { requiresAuth: true, breadcrumb: "GenerateSong" },
     },
     {

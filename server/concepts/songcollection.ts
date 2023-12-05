@@ -35,7 +35,7 @@ export default class SongCollectionConcept {
   async getCollectionById(_id: ObjectId) {
     const doc = await this.songCollections.readOne({ _id });
     if (doc === null) {
-      throw new NotFoundError(`Collection does not exist!`);
+      throw new NotFoundError(``);
     }
     return doc;
   }
@@ -80,8 +80,9 @@ export default class SongCollectionConcept {
     return { msg: "Note added to collection successfully!" };
   }
 
-  async deleteCollection(_id: ObjectId) {
-    await this.songCollections.deleteOne({ _id });
+  async deleteCollection(_id: string) {
+    const id = new ObjectId(_id);
+    await this.songCollections.deleteOne({ _id: id });
     return { msg: "Collection deleted successfully!" };
   }
 
