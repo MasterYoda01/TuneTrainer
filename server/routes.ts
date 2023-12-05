@@ -232,7 +232,7 @@ class Routes {
    * @param session of user who owns the collection
    * @param contentId
    */
-  @Router.put("/collection_access_controls/publicCollections/:contentId")
+  @Router.put("/collection_access_controls/public_collections/:contentId")
   async makeCollectionPublic(session: WebSessionDoc, contentId: string) {
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(contentId);
