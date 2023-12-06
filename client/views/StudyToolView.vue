@@ -4,15 +4,15 @@ import StudyToolComponent from "@/components/StudyTool/StudyToolComponent.vue";
 
 <template>
   <main>
+    <h1 class="major-labels">Study Tool</h1>
     <StudyToolComponent />
   </main>
 </template>
 
 <style scoped>
-.account-actions {
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
-  margin-top: 20px;
+.major-labels {
+  margin-left: 12%;
+  margin-top: 2%;
+  margin-bottom: 2%;
 }
 </style>
