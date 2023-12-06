@@ -7,18 +7,16 @@ const titleParam = ref("");
 const descriptionParam = ref("");
 
 async function createCollection() {
-  
   let title = titleParam.value;
   let description = descriptionParam.value;
 
   let query = { title, description };
 
   const response = await fetchy(`/api/create/collection`, "POST", { query });
-  void router.push({ name: "Collection", params: {id: response._id} });
+  void router.push({ name: "Collection", params: { id: response._id } });
 
   //alert(`Collection created: ${response.msg}`);
   // Refresh collections list or handle response
-  
 }
 </script>
 

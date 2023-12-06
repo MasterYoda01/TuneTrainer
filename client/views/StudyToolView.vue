@@ -4,7 +4,6 @@ import StudyToolComponent from "@/components/StudyTool/StudyToolComponent.vue";
 
 <template>
   <main>
-    <h3>Study Tool</h3>
     <StudyToolComponent />
   </main>
 </template>
