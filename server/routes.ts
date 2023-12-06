@@ -267,7 +267,7 @@ class Routes {
    * @param session of user who owns the collection
    * @param contentId
    */
-  @Router.delete("/collection_access_controls/publicCollections/:contentId")
+  @Router.delete("/collection_access_controls/public_collections/:contentId")
   async makeCollectionNonPublic(session: WebSessionDoc, contentId: string) {
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(contentId);
@@ -322,7 +322,7 @@ class Routes {
    *
    *
    * @param session of a user
-   * @returns the collections that the user has access to (that aren't public)
+   * @returns the publicly accessible collections
    */
   @Router.get("/public_collections")
   async getPublicCollections() {
