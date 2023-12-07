@@ -9,6 +9,7 @@ interface SongifiedNoteType {
 
 const props = defineProps({
   songifiedNote: Object as () => SongifiedNoteType,
+  collectionId: String,
 });
 
 // Computed property to get the full path of the MP3 file

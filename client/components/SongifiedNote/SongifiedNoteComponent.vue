@@ -2,18 +2,22 @@
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { computed, defineProps, ref } from "vue";
+import { useRoute } from "vue-router";
 import router from "../../router";
 import { fetchy } from "../../utils/fetchy";
 
 const loading = ref(false);
 const props = defineProps(["note"]);
+
 const emit = defineEmits(["refreshInnerCollections"]);
 const note = props.note;
 console.log(note);
+const route = useRoute();
+
+const collectionId = route.params.collectionid; // Adjust the parameter name if needed
+
 const userStore = useUserStore();
 const { isLoggedIn, currentUsername } = storeToRefs(userStore);
-
-console.log("in songifiedNoteComponent.vue");
 
 const audioSrc = computed(() => {
   return new URL(`${note.backgroundMusicLink}`, import.meta.url).href;
@@ -22,7 +26,9 @@ const canEdit = ref<boolean>(note.author === currentUsername.value);
 
 const deleteNote = async () => {
   if (confirm("Are you sure you want to delete?")) {
-    let query = { _id: note._id };
+    const collection_id = String(collectionId);
+    console.log("coll id", collection_id);
+    let query = { _id: note._id, collectionid: collection_id };
     await fetchy("/api/delete/songifiednote", "DELETE", { query });
     emit("refreshInnerCollections");
     void router.push({ name: "Collections", params: { user: currentUsername.value } });

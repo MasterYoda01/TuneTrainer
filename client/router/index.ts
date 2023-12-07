@@ -29,7 +29,7 @@ const router = createRouter({
       meta: { requiresAuth: true, breadcrumb: "GenerateSong" },
     },
     {
-      path: "/songifiednote/id=:id",
+      path: "/songifiednote/id=:id/collectionid=:collectionid",
       name: "SongNote",
       component: SongifiedNoteView,
       meta: { requiresAuth: true, breadcrumb: "SongNote" },
