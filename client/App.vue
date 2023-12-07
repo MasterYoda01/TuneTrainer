@@ -26,6 +26,7 @@ onBeforeMount(async () => {
       <nav>
         <div class="nav-buttons">
           <!-- <p @click="$router.push({ name: 'Feed' })" :class="{ active: currentRouteName == 'Feed' }">SmartFeed</p> -->
+          <p @click="$router.push({ name: 'Explore' })" :class="{ active: currentRouteName == 'Explore' }">Explore</p>
           <p @click="$router.push({ name: 'Collections', params: { user: currentUsername } })" :class="{ active: currentRouteName == 'Collections' }">Collections</p>
           <p @click="$router.push({ name: 'StudyTool' })" :class="{ active: currentRouteName == 'StudyTool' }">Study Tool</p>
           <p @click="$router.push({ name: 'GenerateSong' })" :class="{ active: currentRouteName == 'GenerateSong' }">Generate Song</p>
