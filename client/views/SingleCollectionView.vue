@@ -11,8 +11,6 @@ const loaded = ref(false);
 onBeforeMount(async () => {
   loaded.value = false;
   try {
-    console.log("what");
-
     collection.value = await fetchy(`/api/collections/${collection_id.value}`, "GET", {});
     console.log(collection.value);
   } catch (error) {

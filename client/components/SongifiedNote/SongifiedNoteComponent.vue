@@ -12,7 +12,7 @@ console.log(note);
 const userStore = useUserStore();
 const { isLoggedIn, currentUsername } = storeToRefs(userStore);
 
-console.log(note._id);
+console.log("in songifiedNoteComponent.vue");
 
 const audioSrc = computed(() => {
   return new URL(`${note.backgroundMusicLink}`, import.meta.url).href;
@@ -36,12 +36,12 @@ const deleteNote = async () => {
   <div class="column-container">
     <section class="notes">
       <h3>Notes inputted</h3>
-     
+
       {{ note.rawNote }}
     </section>
     <section class="lyrics">
       <h3>Generated Song</h3>
-      
+
       {{ note.generatedLyrics }}
     </section>
   </div>
@@ -59,16 +59,16 @@ const deleteNote = async () => {
 </template>
 
 <style scoped>
-h3{
-    margin-bottom: 0.5em;
-    text-transform: uppercase;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    border-radius: 5px;
-    border: solid 1px #5cb48c;
-    padding: 3px 9px;
-    width: 100%;
+h3 {
+  margin-bottom: 0.5em;
+  text-transform: uppercase;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: 5px;
+  border: solid 1px #5cb48c;
+  padding: 3px 9px;
+  width: 100%;
 }
 .column-container {
   display: flex;

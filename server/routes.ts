@@ -427,5 +427,7 @@ class Routes {
 
 //   return Responses.collections(accessibleCollections);
 // }
+//   return Responses.collections(accessibleCollections);
+// }
 
 export default getExpressRouter(new Routes());

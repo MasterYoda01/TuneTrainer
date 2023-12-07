@@ -17,20 +17,23 @@ const { currentUsername } = storeToRefs(userStore);
 
 async function getSongNotesOfCollection(collection_id: string) {
   try {
-    if (collection_id !== undefined) songifiedNotes.value = await fetchy(`/api/songifiednotes/collection/${collection_id}`, "GET", {});
+    if (collection_id !== undefined) {
+      const resp = await fetchy(`/api/songifiednotes/collection/${collection_id}`, "GET", {});
+      songifiedNotes.value = resp;
+    }
   } catch (e) {
     console.log(e);
   }
 }
 
 async function deleteCollection() {
-  try{
-    if(confirm("Are you sure you would like to delete?")){
-      await fetchy(`/api/collections/${collection._id}`, "DELETE"); 
-      void router.push({name: "Collections", params: {user: currentUsername.value}}); 
+  try {
+    if (confirm("Are you sure you would like to delete?")) {
+      await fetchy(`/api/collections/${collection._id}`, "DELETE");
+      void router.push({ name: "Collections", params: { user: currentUsername.value } });
     }
-  } catch(e){
-    alert(e); 
+  } catch (e) {
+    alert(e);
   }
 }
 onBeforeMount(async () => {
@@ -44,8 +47,8 @@ onBeforeMount(async () => {
   <span class="author">By {{ collection.owner }}</span>
   <span style="float: right; color: #999">Updated {{ moment(collection.dateUpdated).format("MM/DD/YY") }}</span>
   <section class="controls">
-    <AccessControlManager v-bind:contentId="collection._id" v-if="collection.owner"/>
-    <button class="trash" v-if="collection.owner == currentUsername" @click="deleteCollection">🗑️</button> 
+    <AccessControlManager v-bind:contentId="collection._id" v-if="collection.owner" />
+    <button class="trash" v-if="collection.owner == currentUsername" @click="deleteCollection">🗑️</button>
   </section>
   <p class="description">{{ collection.description }}</p>
   <section class="song-notes-container">
@@ -57,15 +60,15 @@ onBeforeMount(async () => {
   </section>
 </template>
 <style scoped>
-.controls{
+.controls {
   margin: 0.8em 0;
 }
-.trash{
+.trash {
   margin-top: -1em;
   margin-left: 0.8em;
 }
-.trash:hover{
-  background-color: #db5c5c
+.trash:hover {
+  background-color: #db5c5c;
 }
 h2 {
   color: #5cb48c;
