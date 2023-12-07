@@ -59,6 +59,28 @@ const templates = ref([
       Come, come on now, follow my lead \n`,
     path: "/songs/shape_of_you.mp3",
   },
+
+  {
+    title: "Jingle Bell Rock",
+    lyrics: `Jingle bell, jingle bell, jingle bell rock \n
+Jingle bells swing and jingle bells ring\n
+Snowin' and blowin' up bushels of fun \n
+Now the jingle hop has begun\n
+Jingle bell, jingle bell, jingle bell rock\n
+Jingle bells chime in jingle bell time\n
+Dancin' and prancin' in Jingle Bell Square\n
+In the frosty air\n
+What a bright time, it's the right time\n
+To rock the night away\n
+Jingle bell time is a swell time\n
+To go glidin' in a one-horse sleigh\n
+Giddy-up jingle horse, pick up your feet\n
+Jingle around the clock\n
+Mix and a-mingle in the jinglin' feet\n
+That's the jingle bell rock\n`,
+
+    path: "/songs/jingle_bell_rock.mp3",
+  },
 ]);
 
 const submitNotes = async () => {
