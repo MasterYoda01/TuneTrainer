@@ -89,15 +89,18 @@ class Routes {
   }
 
   @Router.delete("/delete/songifiednote")
-  async deleteSongifiedNote(session: WebSessionDoc, _id: string) {
+  async deleteSongifiedNote(session: WebSessionDoc, _id: string, collectionid: string) {
     const user = WebSession.getUser(session);
     const parsedNoteId = parseInputAsObjectId(_id);
-
+    console.log("COL ID", collectionid);
     await SongifiedNote.isAuthor(user, parsedNoteId);
 
     await SongifiedNote.deleteSongifiedNote(_id);
     await SongifiedNoteAccessControl.removeAccess(user, parsedNoteId, new ObjectId());
-    // TODO: delete the note from all collections that it is a part of
+    //delete the note from all collections that it is a part of
+
+    await SongCollection.deleteNoteFromCollection(collectionid, _id);
+
     return { msg: "Songified note deleted!" };
   }
 

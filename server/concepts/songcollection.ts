@@ -88,17 +88,17 @@ export default class SongCollectionConcept {
     return { msg: "Collection deleted successfully!" };
   }
 
-  // async deleteNoteFromCollection(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
-  //   const songNotes = await this.songCollections.readOne({ collection_id });
-  //   const songs = songNotes?.songifiedNotes;
-  //   const index = songs?.indexOf(songifiedNote);
-  //   if (index !== undefined) {
-  //     songs?.splice(index, 1);
-  //     update.songifiedNotes = songs;
-  //     await this.songCollections.updateOne({ collection_id }, update);
-  //   }
-  //   return { msg: "collection successfully updated!" };
-  // }
+  async deleteNoteFromCollection(collection_id: string, songifiedNoteId: string) {
+    const songCollection = await this.songCollections.readOne({ _id: new ObjectId(collection_id) });
+    console.log("SONG NOTES", songCollection);
+
+    if (songCollection && songCollection.songifiedNotes) {
+      // Filter out the songifiedNoteId from the songifiedNotes array
+      const updatedSongifiedNotes = songCollection.songifiedNotes.filter((noteId) => noteId.toString() !== songifiedNoteId);
+      await this.updateNote(collection_id, { songifiedNotes: updatedSongifiedNotes });
+    }
+    return { msg: "Collection successfully updated!" };
+  }
 
   // async deleteNoteFromAllCollections(songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
   //   const songcollection = await this.songCollections.readMany({});
