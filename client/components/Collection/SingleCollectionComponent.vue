@@ -17,7 +17,10 @@ const { currentUsername } = storeToRefs(userStore);
 
 async function getSongNotesOfCollection(collection_id: string) {
   try {
-    if (collection_id !== undefined) songifiedNotes.value = await fetchy(`/api/songifiednotes/collection/${collection_id}`, "GET", {});
+    if (collection_id !== undefined) {
+      const resp = await fetchy(`/api/songifiednotes/collection/${collection_id}`, "GET", {});
+      songifiedNotes.value = resp;
+    }
   } catch (e) {
     console.log(e);
   }
