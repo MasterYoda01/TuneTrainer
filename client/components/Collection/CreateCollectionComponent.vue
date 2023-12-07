@@ -5,15 +5,17 @@ import { fetchy } from "../../utils/fetchy";
 
 const titleParam = ref("");
 const descriptionParam = ref("");
+const loaded = ref(true);
 
 async function createCollection() {
+  loaded.value = false; 
   let title = titleParam.value;
   let description = descriptionParam.value;
 
   let query = { title, description };
 
   const response = await fetchy(`/api/create/collection`, "POST", { query });
-  void router.push({ name: "Collection", params: { id: response._id } });
+  void router.push({ name: "Collection", params: { id: response.collection._id } });
 }
 </script>
 
@@ -23,7 +25,7 @@ async function createCollection() {
     <form @submit.prevent="createCollection">
       <input v-model="titleParam" type="text" placeholder="Title" required />
       <input v-model="descriptionParam" type="text" placeholder="Description" required />
-      <button @click=createCollection()>Create</button>
+      <button v-if="loaded" @click=createCollection()>Create</button>
     </form>
   </div>
 </template>

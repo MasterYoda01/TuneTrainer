@@ -8,6 +8,7 @@ const loading = ref(false);
 const props = defineProps(["note"]);
 const emit = defineEmits(["refreshInnerCollections"]);
 const note = props.note;
+console.log(note);
 const userStore = useUserStore();
 const { isLoggedIn, currentUsername } = storeToRefs(userStore);
 
@@ -28,17 +29,19 @@ const deleteNote = async () => {
 </script>
 <template>
   <div class="audio-container">
-    <button v-if="canEdit" class="trash" @click="deleteNote()">🗑️</button>
+    <button v-if="note.author == currentUsername" class="trash" @click="deleteNote()">🗑️</button>
     <audio v-if="audioSrc" controls :src="audioSrc" type="audio/mpeg" id="music" preload="auto">Your browser does not support the audio element.</audio>
   </div>
 
   <div class="column-container">
     <section class="notes">
       <h3>Notes inputted</h3>
+     
       {{ note.rawNote }}
     </section>
     <section class="lyrics">
       <h3>Generated Song</h3>
+      
       {{ note.generatedLyrics }}
     </section>
   </div>
@@ -58,6 +61,14 @@ const deleteNote = async () => {
 <style scoped>
 h3{
     margin-bottom: 0.5em;
+    text-transform: uppercase;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 5px;
+    border: solid 1px #5cb48c;
+    padding: 3px 9px;
+    width: 100%;
 }
 .column-container {
   display: flex;

@@ -9,6 +9,7 @@ const { currentUsername } = storeToRefs(useUserStore());
 
 const props = defineProps(["collections", "headerText", "canEdit"]);
 const collections = props.collections;
+console.log(collections);
 const canEdit = props.canEdit; 
 const username = collections[0] ? collections[0].owner : undefined;
 
@@ -61,6 +62,8 @@ h3 {
   font-family: "Arial";
   font-weight: 600;
   text-transform: uppercase;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
 }
 .smart-collection-container {
   display: flex;
@@ -84,7 +87,7 @@ h3 {
 }
 .collections-container {
   column-count: 3;
-  column-gap: 2em;
+  column-gap: 1em;
   margin: 5px 0;
   flex-wrap: nowrap;
 }
@@ -100,6 +103,7 @@ h3 {
   padding: 4% 5%;
   flex-wrap: wrap;
   position: relative;
+  margin-bottom: 1em;
 }
 
 .collection-block:hover {

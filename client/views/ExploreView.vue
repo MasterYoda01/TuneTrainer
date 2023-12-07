@@ -28,7 +28,4 @@ const canEdit = ref(false);
     
 </template>
 <style scoped>
-h2{
-    margin-bottom: 0.5em;
-}
 </style>

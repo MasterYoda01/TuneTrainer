@@ -38,7 +38,7 @@ onBeforeMount(async () => {
   <main class="container">
     <h3 class="major-labels">Collect<span style="color: #000;">ions</span></h3>
     <CreateCollectionComponent v-if="user == currentUsername" />
-    <MultiCollectionsComponent v-if="loaded" :collections="collections" headerText="Collections" />
+    <MultiCollectionsComponent v-if="loaded" :collections="collections" headerText="Collections" :canEdit="canEdit" />
     <MultiCollectionsComponent v-if="loaded" :collections="sharedCollections" headerText="Shared Collections" :canEdit="canEdit" />
   </main>
 </template>

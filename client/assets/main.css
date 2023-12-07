@@ -210,6 +210,9 @@ audio::-webkit-media-controls-play-button{
   padding: 0.25em;
   margin-right: 0.5em;
 }
+.trash:hover{
+  background-color: #db5c5c;
+}
 @keyframes pulsate {
   0% {
     opacity: 1;
