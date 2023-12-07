@@ -9,7 +9,6 @@ const loaded = ref(false);
 onBeforeMount(async () => {
   try {
     const publicCollectionsresponse = await fetchy("/api/publiccollections", "GET", {});
-    console.log(publicCollectionsresponse);
     publicCollections.value = publicCollectionsresponse;
   } catch (error) {
     console.error("Error getting collection notes:", error);

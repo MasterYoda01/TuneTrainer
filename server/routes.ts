@@ -144,13 +144,12 @@ class Routes {
   //return objects of all songified notes in the collection
   @Router.get("/songifiednotes/collection/:collection_id")
   async getSongNotesInCollection(session: WebSessionDoc, collection_id: string) {
-    const user = WebSession.getUser(session);
     const songNoteIds = (await SongCollection.getCollectionById(new ObjectId(collection_id)))?.songifiedNotes;
     const songNotesArray = [];
     if (songNoteIds) {
       for (const songNoteId of songNoteIds) {
         const songNote = await SongifiedNote.getSongifiedNoteBySongId(songNoteId);
-        if (songNote !== null && (await SongifiedNoteAccessControl.canAccess(user, songNote._id))) songNotesArray.push(songNote); // TODO: Optimize speed
+        if (songNote !== null) songNotesArray.push(songNote);
       }
     }
     return songNotesArray;

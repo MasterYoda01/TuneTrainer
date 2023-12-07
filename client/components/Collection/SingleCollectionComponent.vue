@@ -19,6 +19,7 @@ async function getSongNotesOfCollection(collection_id: string) {
   try {
     if (collection_id !== undefined) {
       const resp = await fetchy(`/api/songifiednotes/collection/${collection_id}`, "GET", {});
+      console.log("RESPS", resp);
       songifiedNotes.value = resp;
     }
   } catch (e) {
