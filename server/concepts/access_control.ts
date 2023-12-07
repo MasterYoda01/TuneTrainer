@@ -113,8 +113,10 @@ export default class AccessControlConcept {
    *
    * @returns the Ids of all instances of user-created content that are pub
    */
-  async getPublicContent(): Promise<Array<ObjectId>> {
-    return (await this.publicContent.readMany({})).map(({ content }) => content);
+  async getPublicContent() {
+    const publicColl = await this.publicContent.readMany({});
+    const collectionIds = publicColl.map(({ content }) => content);
+    return collectionIds;
   }
 
   /**

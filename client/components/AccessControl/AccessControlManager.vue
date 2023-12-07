@@ -76,7 +76,7 @@ async function grantSubjectAccessToObject(requestedAccessControl: AccessRequestI
 
 async function makePublic() {
   try {
-    await fetchy(`/api/collection_access_controls/public_collections/${objectOfAccessControl.value.id}`, "PUT");
+    await fetchy(`/api/collection_access_controls/publiccollections/${objectOfAccessControl.value.id}`, "PUT");
     await syncUsersWithAccess();
   } catch (_) {
     return;
@@ -85,7 +85,7 @@ async function makePublic() {
 
 async function makeRestricted() {
   try {
-    await fetchy(`/api/collection_access_controls/public_collections/${objectOfAccessControl.value.id}`, "DELETE");
+    await fetchy(`/api/collection_access_controls/publiccollections/${objectOfAccessControl.value.id}`, "DELETE");
     await syncUsersWithAccess();
   } catch (_) {
     return;
