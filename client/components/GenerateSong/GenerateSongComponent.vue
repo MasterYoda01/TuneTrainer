@@ -38,6 +38,49 @@ const templates = ref([
       "Oh, na, oh Just shoot for the stars, if it feels right Then aim for my heart, if you feel like And take me away And make it okay I swear, I'll behave You wanted control, so we waited I put on a show, now we're naked You say, I'm a kid My ego is big I don't give a shit And it goes like this take me by the tongue, and I'll know you (Ah) kiss me till you're drunk, and I'll show you All the moves like Jagger I've got the moves like Jagger I've got the moo-oo-oo-ooves like Jagger I don't need try to control you (Ah) look into my eyes, and I'll own you With them the moves like Jagger I've got the moves like Jagger I've got the moo-oo-oo-ooves like Jagger",
     path: "/songs/moves_like_jagger.mp3",
   },
+
+  {
+    title: "Shape of You",
+    lyrics: `The club isn't the best place to find a lover\n
+      So the bar is where I go \n
+      Me and my friends at the table doing shots \n
+      Drinking fast and then we talk slow \n
+      Come over and start up a conversation with just me \n
+      And trust me I'll give it a chance now \n
+      Take my hand, stop, put Van the Man on the jukebox \n
+      And then we start to dance, and now I'm singing like \n
+      Girl, you know I want your love \n
+      Your love was handmade for somebody like me \n
+      Come on now, follow my lead \n
+      I may be crazy, don't mind me \n
+      Say, boy, let's not talk too much\n
+      Grab on my waist and put that body on me\n
+      Come on now, follow my lead \n
+      Come, come on now, follow my lead \n`,
+    path: "/songs/shape_of_you.mp3",
+  },
+
+  {
+    title: "Jingle Bell Rock",
+    lyrics: `Jingle bell, jingle bell, jingle bell rock \n
+Jingle bells swing and jingle bells ring\n
+Snowin' and blowin' up bushels of fun \n
+Now the jingle hop has begun\n
+Jingle bell, jingle bell, jingle bell rock\n
+Jingle bells chime in jingle bell time\n
+Dancin' and prancin' in Jingle Bell Square\n
+In the frosty air\n
+What a bright time, it's the right time\n
+To rock the night away\n
+Jingle bell time is a swell time\n
+To go glidin' in a one-horse sleigh\n
+Giddy-up jingle horse, pick up your feet\n
+Jingle around the clock\n
+Mix and a-mingle in the jinglin' feet\n
+That's the jingle bell rock\n`,
+
+    path: "/songs/jingle_bell_rock.mp3",
+  },
 ]);
 
 const submitNotes = async () => {

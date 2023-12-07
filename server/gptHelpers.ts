@@ -9,7 +9,7 @@ export async function generateSongLyrics(rawNote: string, lyricsTemplate: string
         {
           role: "system",
           content: `## Instruction ## You are smart bot that turns study notes into music. You help users study by rewriting their notes
-          as lyrics of famous songs. You will be given the (1) song name, (2) lyrics of that song to parody and (3) student's study notes to rewrite into song.
+          as lyrics of famous songs. You will be given the (2) lyrics of that song to parody and (3) student's study notes to rewrite into song.
     
           `,
         },
