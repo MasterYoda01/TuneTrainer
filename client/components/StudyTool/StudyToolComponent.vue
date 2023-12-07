@@ -174,6 +174,7 @@ onBeforeMount(async () => {
 
 <template>
   <div class="study-tool-container">
+    <p class="description">Choose a song collection to study!</p>
     <div>
       <select v-model="selectedCollection" class="collection-selector">
         <option disabled value="">Select a Collection</option>
@@ -206,11 +207,16 @@ onBeforeMount(async () => {
 .study-tool-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 20px;
+  align-items: flex-start;
+  gap: 5px;
+  margin-top: 0px;
+  margin-left: 12%;
 }
+
+.description {
+  font-weight: bold;
+}
+
 .incorrect-msg {
   color: red;
   font-weight: bold;
