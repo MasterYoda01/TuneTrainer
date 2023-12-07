@@ -201,6 +201,8 @@ function changeSelection(collection: Record<string, string>){
     </div>
     <section v-if="chosen">
       <button v-if="studyCollection.cards.length > 0" @click="finishStudying" class="finish">Finish Studying</button>
+      <div v-if="guessResult.isCorrect === false" class="incorrect-msg">Try Again!</div>
+      
       <div class="study-cards" v-if="studyCollection.cards.length > 0">
         <h3>Card {{ currentCardIndex + 1 }} of {{ studyCollection.cards.length }}</h3>
         <template v-for="(word, index) in currLyrics" :key="index">
@@ -208,7 +210,6 @@ function changeSelection(collection: Record<string, string>){
           <input v-else type="text" v-model="userInputs[index]" />
           <br v-if="word.includes('\n')" />
         </template>
-        <div v-if="guessResult.isCorrect === false" class="incorrect-msg">Incorrect</div>
       </div>
       <div class="navigation-buttons">
           <button @click="checkAnswers" style="color:#5cb48c">Submit</button>
@@ -304,6 +305,8 @@ h3{
   color: red;
   font-weight: bold;
   margin-top: 10px;
+  float: right;
+  animation: 5s infinite alternate slidein;
 }
 .navigation-buttons {
   margin-top: 0;

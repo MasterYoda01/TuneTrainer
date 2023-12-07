@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from "vue";
+import { ref } from "vue";
 
 import router from "@/router";
 import { useUserStore } from "@/stores/user";
@@ -20,7 +20,9 @@ interface SongCollectionDoc {
   owner: string; // Replace with the correct type if not string
   upvotes: number;
 }
-const userCollections = ref<SongCollectionDoc[]>([]);
+
+const props = defineProps(["collections"]);
+const userCollections = ref<SongCollectionDoc[]>(props.collections);
 const chosenCollection = ref<SongCollectionDoc>();
 
 const editMode = ref(false); //some buttons should NOT be visible before and after lyrics generation
@@ -63,21 +65,21 @@ const templates = ref([
   {
     title: "Jingle Bell Rock",
     lyrics: `Jingle bell, jingle bell, jingle bell rock \n
-Jingle bells swing and jingle bells ring\n
-Snowin' and blowin' up bushels of fun \n
-Now the jingle hop has begun\n
-Jingle bell, jingle bell, jingle bell rock\n
-Jingle bells chime in jingle bell time\n
-Dancin' and prancin' in Jingle Bell Square\n
-In the frosty air\n
-What a bright time, it's the right time\n
-To rock the night away\n
-Jingle bell time is a swell time\n
-To go glidin' in a one-horse sleigh\n
-Giddy-up jingle horse, pick up your feet\n
-Jingle around the clock\n
-Mix and a-mingle in the jinglin' feet\n
-That's the jingle bell rock\n`,
+      Jingle bells swing and jingle bells ring\n
+      Snowin' and blowin' up bushels of fun \n
+      Now the jingle hop has begun\n
+      Jingle bell, jingle bell, jingle bell rock\n
+      Jingle bells chime in jingle bell time\n
+      Dancin' and prancin' in Jingle Bell Square\n
+      In the frosty air\n
+      What a bright time, it's the right time\n
+      To rock the night away\n
+      Jingle bell time is a swell time\n
+      To go glidin' in a one-horse sleigh\n
+      Giddy-up jingle horse, pick up your feet\n
+      Jingle around the clock\n
+      Mix and a-mingle in the jinglin' feet\n
+      That's the jingle bell rock\n`,
 
     path: "/songs/jingle_bell_rock.mp3",
   },
@@ -107,20 +109,6 @@ const submitNotes = async () => {
     loading.value = false;
     editMode.value = true;
     editedLyrics.value = apiResponse.value;
-  }
-};
-
-onBeforeMount(async () => {
-  await getUsersCollections(); //modifies
-});
-
-const getUsersCollections = async () => {
-  try {
-    const response = await fetchy(`/api/users/${currentUsername.value}/collections`, "GET", {});
-    console.log("user collection", response);
-    userCollections.value = response;
-  } catch (error) {
-    console.error("Error getting collection notes:", error);
   }
 };
 
@@ -161,7 +149,7 @@ const finalSave = async () => {
 <template>
   <div class="column-container">
     <div class="notes-container">
-      <textarea v-model="userNotes" placeholder="Enter your notes here..." rows="10" class="notes-textarea"></textarea>
+      <textarea v-model="userNotes" placeholder="Enter your notes here..." rows="7" class="notes-textarea"></textarea>
       <section class="selection" v-if="!editMode">
         <button class="dropdown">
           {{ chosenSong ? chosenSong : "Choose Tune" }}
@@ -286,7 +274,7 @@ const finalSave = async () => {
 }
 
 .notes-textarea {
-  width: 97%;
+  width: 100%;
   padding: 8px;
   border: 1px solid lightgray;
   border-radius: 9px;
