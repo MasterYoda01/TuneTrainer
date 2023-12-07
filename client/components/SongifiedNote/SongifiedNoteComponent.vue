@@ -25,8 +25,7 @@ const deleteNote = async () => {
     let query = { _id: note._id };
     await fetchy("/api/delete/songifiednote", "DELETE", { query });
     emit("refreshInnerCollections");
-    window.history.go(); //refresh page
-    void router.push({ name: "Collection", params: { user: currentUsername.value } });
+    void router.push({ name: "Collections", params: { user: currentUsername.value } });
   }
 };
 </script>

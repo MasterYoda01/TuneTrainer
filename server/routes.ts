@@ -4,7 +4,6 @@ import { SongCollectionDoc } from "./concepts/songcollection";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
 import { Router, getExpressRouter } from "./framework/router";
-import { generateSongLyrics } from "./gptHelpers";
 import { idsAreEqual, parseInputAsObjectId } from "./parser";
 import Responses from "./responses";
 
@@ -62,22 +61,22 @@ class Routes {
   async generateSongifiedNote(session: WebSessionDoc, rawNote: string, lyricsTemplate: string, backgroundMusicLink: string) {
     //UNCOMMENT THIS LINE TO TEST WITH GPT
     console.log("LYRICS TEMPALTES", lyricsTemplate);
-    const generatedLyrics = await generateSongLyrics(rawNote, lyricsTemplate);
+    // const generatedLyrics = await generateSongLyrics(rawNote, lyricsTemplate);
 
     // TEST LYRICS
-    // const generatedLyrics = `
-    // And trust me, it's more than just acid rain.\n
-    // Pour the solution, watch, as colors change,\n
-    // In the world of atoms, isn't it strange?\n
-    // Chem, you know I love your bonds,\n
-    // From ionic to covalent, it all responds.\n
-    // Let's not wait, stir up the chemical sea,\n
-    // I'm fascinated, with reactions, let's agree.\n
-    // Hey, let's decode molecular speech,\n
-    // Write down the formula, let's each teach.\n
-    // Come now, stir up the elemental creed,\n
-    // Come, come now, in the periodic table we read,\n
-    // I'm in love with chemistry, indeed.\n`;
+    const generatedLyrics = `
+    And trust me, it's more than just acid rain.\n
+    Pour the solution, watch, as colors change,\n
+    In the world of atoms, isn't it strange?\n
+    Chem, you know I love your bonds,\n
+    From ionic to covalent, it all responds.\n
+    Let's not wait, stir up the chemical sea,\n
+    I'm fascinated, with reactions, let's agree.\n
+    Hey, let's decode molecular speech,\n
+    Write down the formula, let's each teach.\n
+    Come now, stir up the elemental creed,\n
+    Come, come now, in the periodic table we read,\n
+    I'm in love with chemistry, indeed.\n`;
 
     if (generatedLyrics) {
       const user = WebSession.getUser(session);
