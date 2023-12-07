@@ -47,7 +47,7 @@ onBeforeMount(async () => {
   <span class="author">By {{ collection.owner }}</span>
   <span style="float: right; color: #999">Updated {{ moment(collection.dateUpdated).format("MM/DD/YY") }}</span>
   <section class="controls">
-    <AccessControlManager v-bind:contentId="collection._id" v-if="collection.owner" />
+    <AccessControlManager v-bind:contentId="collection._id" v-if="collection.owner == currentUsername" />
     <button class="trash" v-if="collection.owner == currentUsername" @click="deleteCollection">🗑️</button>
   </section>
   <p class="description">{{ collection.description }}</p>

@@ -38,6 +38,7 @@ const deleteCollection = async (collection_id: string, event: Event) => {
 <template>
   <div>
     <h3>{{ $props.headerText }}</h3>
+    <div v-if="collections.length === 0" style="color: #999;">No collections here yet!</div>
     <div class="collections-container">
       <RouterLink v-for="collection in collections" :key="collection._id" style="text-decoration: none" :to="{ name: 'Collection', params: { id: collection._id } }">
         <div :key="collection._id" class="collection-block">
