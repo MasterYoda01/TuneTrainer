@@ -4,7 +4,7 @@ import router from "@/router";
 import { onBeforeMount, ref } from "vue";
 import { fetchy } from "../utils/fetchy";
 
-const collection_id = ref(router.currentRoute.value.params.id);
+const collection_id = ref(router.currentRoute.value.params.id); // This doesn't work
 const collection = ref<Record<string, string>>({});
 const loaded = ref(false);
 
@@ -25,7 +25,10 @@ onBeforeMount(async () => {
 
 <template>
   <main class="container">
-    <SingleCollectionComponent v-if="loaded" :collection="collection" />
+    <div class="loaded-content" v-if="loaded">
+      <h3 v-if="!collection">Could not load this collection.</h3>
+      <SingleCollectionComponent v-else :collection="collection" />
+    </div>
     <h3 v-else>Loading...</h3>
   </main>
 </template>

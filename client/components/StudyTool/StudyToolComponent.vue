@@ -131,8 +131,8 @@ async function getUserCollections() {
 
 async function getSongNoteById(songNoteId: string) {
   try {
-    const response = await fetchy(`/api/songifiednote/bysongid/${songNoteId}`, "GET", {});
-    return response;
+    const response = await fetchy(`/api/songifiednotes/id/${songNoteId}`, "GET", {});
+    return response.songNote;
   } catch (error) {
     console.error("Error getting song note:", error);
     return null;

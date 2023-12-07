@@ -12,7 +12,7 @@ const songifiedNotes = ref<Array<Record<string, string>>>([]);
 
 async function getSongNotesOfCollection(collection_id: string) {
   try {
-    songifiedNotes.value = await fetchy(`/api/songifiednotes/collection/${collection_id}`, "GET", {});
+    if (collection_id !== undefined) songifiedNotes.value = await fetchy(`/api/songifiednotes/collection/${collection_id}`, "GET", {});
   } catch (e) {
     console.log(e);
   }
