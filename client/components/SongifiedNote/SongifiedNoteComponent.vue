@@ -2,6 +2,7 @@
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { computed, defineProps, ref } from "vue";
+import router from "../../router";
 import { fetchy } from "../../utils/fetchy";
 
 const loading = ref(false);
@@ -21,9 +22,11 @@ const canEdit = ref<boolean>(note.author === currentUsername.value);
 
 const deleteNote = async () => {
   if (confirm("Are you sure you want to delete?")) {
-    await fetchy(`/api/delete/songifiednote/${note._id}`, "DELETE");
-    window.history.go(); //refresh page
+    let query = { _id: note._id };
+    await fetchy("/api/delete/songifiednote", "DELETE", { query });
     emit("refreshInnerCollections");
+    window.history.go(); //refresh page
+    void router.push({ name: "Collection", params: { user: currentUsername.value } });
   }
 };
 </script>
