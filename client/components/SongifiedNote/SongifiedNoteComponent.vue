@@ -20,7 +20,6 @@ const canEdit = ref<boolean>(note.author === currentUsername.value);
 
 const deleteNote = async () => {
   if (confirm("Are you sure you want to delete?")) {
-    let query = { _id: note._id };
     await fetchy(`/api/delete/songifiednote/${note._id}`, "DELETE");
     window.history.go(); //refresh page
     emit("refreshInnerCollections");
@@ -57,6 +56,9 @@ const deleteNote = async () => {
 </template>
 
 <style scoped>
+h3{
+    margin-bottom: 0.5em;
+}
 .column-container {
   display: flex;
   gap: 3%;
@@ -72,11 +74,5 @@ const deleteNote = async () => {
 .audio-container {
   text-align: right;
   margin-bottom: 2%;
-}
-.trash {
-  border-radius: 5px;
-  font-size: 20px;
-  padding: 0.25em;
-  margin-right: 0.5em;
 }
 </style>

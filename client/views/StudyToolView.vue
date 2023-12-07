@@ -3,16 +3,14 @@ import StudyToolComponent from "@/components/StudyTool/StudyToolComponent.vue";
 </script>
 
 <template>
-  <main>
-    <h1 class="major-labels">Study Tool</h1>
+  <main class="container">
+    <h1 class="major-labels"><span style="color:#000">Study</span> Tool</h1>
     <StudyToolComponent />
   </main>
 </template>
 
 <style scoped>
 .major-labels {
-  margin-left: 12%;
-  margin-top: 2%;
-  margin-bottom: 2%;
+  margin: 2% 0;
 }
 </style>

@@ -18,6 +18,13 @@ async function getSongNotesOfCollection(collection_id: string) {
   }
 }
 
+async function deleteCollection() {
+  try{
+    
+  } catch(e){
+    alert(e); 
+  }
+}
 onBeforeMount(async () => {
   await getSongNotesOfCollection(collection._id);
   emit("refreshCollections");
@@ -28,7 +35,10 @@ onBeforeMount(async () => {
   <h2>{{ collection.title }}</h2>
   <span class="author">By {{ collection.owner }}</span>
   <span style="float: right; color: #999">Updated {{ moment(collection.dateUpdated).format("MM/DD/YY") }}</span>
-  <div class="access-manage" v-if="collection.owner"><AccessControlManager v-bind:contentId="collection._id" /></div>
+  <section class="controls">
+    <AccessControlManager v-bind:contentId="collection._id" v-if="collection.owner"/>
+    <button class="trash" @click="deleteCollection">🗑️</button> 
+  </section>
   <p class="description">{{ collection.description }}</p>
   <section class="song-notes-container">
     <div v-for="note in songifiedNotes" :key="note._id">
@@ -40,6 +50,13 @@ onBeforeMount(async () => {
 </template>
 
 <style scoped>
+.controls{
+  margin: 0.8em 0;
+}
+.trash{
+  margin-top: -1em;
+  margin-left: 0.8em;
+}
 h2 {
   color: #5cb48c;
   font-size: 40px;

@@ -204,6 +204,12 @@ audio::-webkit-media-controls-play-button{
 .container{
   padding: 3% 12%;
 }
+.trash {
+  border-radius: 5px;
+  font-size: 20px;
+  padding: 0.25em;
+  margin-right: 0.5em;
+}
 @keyframes pulsate {
   0% {
     opacity: 1;
