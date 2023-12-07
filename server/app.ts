@@ -16,3 +16,4 @@ export const SongCollection = new SongCollectionConcept();
 export const SongifiedNote = new SongifiedNoteConcept();
 export const StudyTool = new StudyToolConcept();
 export const CollectionAccessControl = new AccessControl("collection");
+export const SongifiedNoteAccessControl = new AccessControl("songifiedNote");

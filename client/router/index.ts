@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import { useUserStore } from "@/stores/user";
 
 import CollectionsView from "../views/CollectionsView.vue";
+import ExploreView from "../views/ExploreView.vue";
 import GenerateSongView from "../views/GenerateSong.vue";
 import LoginView from "../views/LoginView.vue";
 import SettingView from "../views/SettingView.vue";
@@ -49,6 +50,12 @@ const router = createRouter({
       path: "/setting",
       name: "Settings",
       component: SettingView,
+      meta: { requiresAuth: true, breadcrumb: "Settings" },
+    },
+    {
+      path: "/explore",
+      name: "Explore",
+      component: ExploreView,
       meta: { requiresAuth: true, breadcrumb: "Settings" },
     },
     {

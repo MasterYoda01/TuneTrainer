@@ -95,7 +95,7 @@ export default class AccessControlConcept {
     return { msg: "Successfully revoked User's access from this content." };
   }
 
-  private async canAccess(user: ObjectId, userContent: ObjectId): Promise<boolean> {
+  public async canAccess(user: ObjectId, userContent: ObjectId): Promise<boolean> {
     const existing: ParentShipDoc[] = await this.accessControls.getParentships({ child: userContent, parent: user }); // TODO: run both at same time
     const existingPublic: PublicityDoc[] = await this.publicContent.readMany({ content: userContent });
     if (existing.length != 0 || existingPublic.length != 0) return true;

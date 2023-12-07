@@ -7,8 +7,9 @@ import { fetchy } from "../../utils/fetchy";
 
 const { currentUsername } = storeToRefs(useUserStore());
 
-const props = defineProps(["collections", "headerText"]);
+const props = defineProps(["collections", "headerText", "canEdit"]);
 const collections = props.collections;
+const canEdit = props.canEdit; 
 const username = collections[0] ? collections[0].owner : undefined;
 
 const collectionIdParam = ref("");
@@ -43,7 +44,7 @@ const deleteCollection = async (collection_id: string, event: Event) => {
             <span class="title">{{ collection.title }}</span>
             <div class="song-owner">
               {{ collection.songifiedNotes.length }} Songs <br />By {{ collection.owner }}
-              <button class="trash" @click="deleteCollection(collection._id, $event)">🗑️</button>
+              <button class="trash" v-if="canEdit" @click="deleteCollection(collection._id, $event)">🗑️</button>
             </div>
             <p>
               <span class="description">{{ collection.description }}</span>
@@ -134,6 +135,6 @@ h3 {
 }
 
 .trash:hover {
-  color: #f00;
+  background-color: #db5c5c;
 }
 </style>
