@@ -150,12 +150,13 @@ class Routes {
     return songNotesArray;
   }
 
-  // @Router.delete("/collections/:_id")
-  // async deleteCollection(session: WebSessionDoc, _id: ObjectId) {
-  //   const user = WebSession.getUser(session);
-  //   await SongCollection.isOwner(user, _id);
-  //   return SongCollection.deleteCollection(_id);
-  // }
+  @Router.delete("/collections/:_id")
+  async deleteCollection(session: WebSessionDoc, _id: string) {
+    const user = WebSession.getUser(session);
+    const new_id = new ObjectId(_id);
+    await SongCollection.isOwner({ user, _id: new_id });
+    return SongCollection.deleteCollection(_id);
+  }
 
   // @Router.patch("/collections/remove/one/:songifiedNote")
   // async deleteNoteFromCollection(collection_id: ObjectId, songifiedNote: ObjectId, update: Partial<SongCollectionDoc>) {
