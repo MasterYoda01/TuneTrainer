@@ -325,7 +325,7 @@ class Routes {
   // }
 
   @Router.get("/publiccollections")
-  async getPublicCollections(): Promise<SongCollectionDoc[]> {
+  async getPublicCollections() {
     const publicColl = await CollectionAccessControl.getPublicContent();
     const collectionObjsArr: SongCollectionDoc[] = [];
     console.log("publicColl", publicColl);
@@ -335,7 +335,6 @@ class Routes {
         collectionObjsArr.push(collectionObj);
       }
     }
-
     return Responses.collections(collectionObjsArr);
   }
 
