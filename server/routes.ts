@@ -149,7 +149,7 @@ class Routes {
     if (songNoteIds) {
       for (const songNoteId of songNoteIds) {
         const songNote = await SongifiedNote.getSongifiedNoteBySongId(songNoteId);
-        if (songNote !== null) songNotesArray.push(songNote);
+        if (songNote) songNotesArray.push(songNote);
       }
     }
     return songNotesArray;
@@ -212,9 +212,8 @@ class Routes {
 
   @Router.get("/songifiednotes/id/:songId")
   async getSongifiedNotesBySongId(session: WebSessionDoc, songId: string) {
-    const user = WebSession.getUser(session);
     const parsedSongId: ObjectId = parseInputAsObjectId(songId);
-    await SongifiedNoteAccessControl.assertHasAccess(user, parsedSongId);
+
     const songNote = await SongifiedNote.getSongifiedNoteBySongId(parsedSongId);
     console.log(await Responses.songnote(songNote));
     return { msg: "Got Songified Note by _id!", songNote: await Responses.songnote(songNote) };
