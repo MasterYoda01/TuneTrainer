@@ -452,14 +452,14 @@ async function getPublicCollections() {
   return Responses.collections(publicCollections);
 }
 
-async function getAccessibleCollectionsWithRestrictedAccess(session: WebSessionDoc) {
-  const user = WebSession.getUser(session);
-  const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getContentSharedWithUser(user)).map((id) => {
-    return SongCollection.getCollectionById(id);
-  });
-  const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
+// async function getAccessibleCollectionsWithRestrictedAccess(session: WebSessionDoc) {
+//   const user = WebSession.getUser(session);
+//   const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getContentSharedWithUser(user)).map((id) => {
+//     return SongCollection.getCollectionById(id);
+//   });
+//   const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
 
-  return Responses.collections(accessibleCollections);
-}
+//   return Responses.collections(accessibleCollections);
+// }
 
 export default getExpressRouter(new Routes());
