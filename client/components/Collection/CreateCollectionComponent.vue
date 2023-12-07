@@ -35,20 +35,26 @@ h3{
   margin: 0.5em 0;
   text-transform: uppercase;
   letter-spacing: 1px;
-  font-size: 16px;
+  font-size: 20px;
 }
 input{
   background-color: #fff;
   border: solid 2px #999;
+  margin-bottom: 0.1em;
+  border-radius: 9px;
+  border:solid 1.5px #000;
 }
 form button{
   float: right;
-  padding: 4px 6px;
+  padding: 4px 9px;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
   font-size: 16px;
   border: solid 1px #5cb48c;
-  
+  border-radius: 5px;
+  margin-top: 1em;
+  border-width: 1.5px;
 }
+
 </style>

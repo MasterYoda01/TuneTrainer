@@ -16,6 +16,7 @@ const loaded = ref(false);
 const collections = ref<Array<Record<string, string>>>([]);
 const sharedCollections = ref<Array<Record<string, string>>>([]);
 const canEdit = ref(true);
+const canEditShared = ref(false);
 
 //finds all collections owned/shared by user
 onBeforeMount(async () => {
@@ -38,8 +39,8 @@ onBeforeMount(async () => {
   <main class="container">
     <h3 class="major-labels">Collect<span style="color: #000">ions</span></h3>
     <CreateCollectionComponent v-if="user == currentUsername" />
-    <MultiCollectionsComponent v-if="loaded" :collections="collections" headerText="Collections" :canEdit="canEdit" />
-    <MultiCollectionsComponent v-if="loaded" :collections="sharedCollections" headerText="Shared Collections" :canEdit="canEdit" />
+    <MultiCollectionsComponent style="margin-top: 4em;" v-if="loaded" :collections="collections" headerText="Collections" :canEdit="canEdit" />
+    <MultiCollectionsComponent v-if="loaded" :collections="sharedCollections" headerText="Shared Collections" :canEdit="canEditShared" />
   </main>
 </template>
 

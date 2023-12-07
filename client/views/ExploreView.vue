@@ -22,7 +22,7 @@ const canEdit = ref(false);
 </script>
 <template>
   <main class="container">
-    <h2 class="major-labels"><span style="color: #000">ex</span>plore</h2>
+    <h2 class="major-labels">ex<span style="color: #000">plore</span></h2>
     <MultiCollectionsComponent v-if="loaded" :collections="publicCollections" headerText="Public Collections" :canEdit="canEdit" />
   </main>
 </template>
