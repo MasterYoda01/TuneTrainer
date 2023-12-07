@@ -34,14 +34,16 @@ export default class SongCollectionConcept {
 
   async getCollectionById(_id: ObjectId) {
     const doc = await this.songCollections.readOne({ _id });
-    if (doc === null) {
-      throw new NotFoundError(``);
-    }
     return doc;
   }
 
   async getSongsInColection(_id: ObjectId): Promise<Array<ObjectId>> {
-    const collectionDoc: SongCollectionDoc = await this.getCollectionById(_id);
+    const collectionDoc: SongCollectionDoc | null = await this.getCollectionById(_id);
+
+    if (collectionDoc === null) {
+      throw new Error("Collection not found");
+    }
+
     return collectionDoc.songifiedNotes;
   }
 

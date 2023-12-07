@@ -10,7 +10,7 @@ const { currentUsername } = storeToRefs(useUserStore());
 const props = defineProps(["collections", "headerText", "canEdit"]);
 const collections = props.collections;
 console.log(collections);
-const canEdit = props.canEdit; 
+const canEdit = props.canEdit;
 const username = collections[0] ? collections[0].owner : undefined;
 
 const collectionIdParam = ref("");

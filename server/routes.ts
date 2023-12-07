@@ -60,6 +60,7 @@ class Routes {
   @Router.post("/generate/songifiednote/")
   async generateSongifiedNote(session: WebSessionDoc, rawNote: string, lyricsTemplate: string, backgroundMusicLink: string) {
     //UNCOMMENT THIS LINE TO TEST WITH GPT
+    console.log("LYRICS TEMPALTES", lyricsTemplate);
     // const generatedLyrics = await generateSongLyrics(rawNote, lyricsTemplate);
 
     // TEST LYRICS
@@ -117,6 +118,7 @@ class Routes {
   // generate songified note concept
   @Router.post("/create/collection/")
   async createCollection(session: WebSessionDoc, title: string, description: string) {
+    console.log("in collection");
     const user = WebSession.getUser(session);
     const created = await SongCollection.create(user, title, description);
     if (created.songCollection !== null) {
@@ -140,12 +142,13 @@ class Routes {
   @Router.get("/songifiednotes/collection/:collection_id")
   async getSongNotesInCollection(session: WebSessionDoc, collection_id: string) {
     const user = WebSession.getUser(session);
-    const songNoteIds = (await SongCollection.getCollectionById(new ObjectId(collection_id))).songifiedNotes;
+    const songNoteIds = (await SongCollection.getCollectionById(new ObjectId(collection_id)))?.songifiedNotes;
     const songNotesArray = [];
-
-    for (const songNoteId of songNoteIds) {
-      const songNote = await SongifiedNote.getSongifiedNoteBySongId(songNoteId);
-      if (songNote !== null && (await SongifiedNoteAccessControl.canAccess(user, songNote._id))) songNotesArray.push(songNote); // TODO: Optimize speed
+    if (songNoteIds) {
+      for (const songNoteId of songNoteIds) {
+        const songNote = await SongifiedNote.getSongifiedNoteBySongId(songNoteId);
+        if (songNote !== null && (await SongifiedNoteAccessControl.canAccess(user, songNote._id))) songNotesArray.push(songNote); // TODO: Optimize speed
+      }
     }
     return songNotesArray;
   }
@@ -224,8 +227,12 @@ class Routes {
     await CollectionAccessControl.assertHasAccess(user, parsedCollectionId);
     //get all the song notes in this collection
     const collection = await SongCollection.getCollectionById(new ObjectId(collectionId));
-    const studyToolColl = await StudyTool.getStudyToolCollection(new ObjectId(collectionId), collection.songifiedNotes);
-    return studyToolColl;
+    if (collection) {
+      const studyToolColl = await StudyTool.getStudyToolCollection(new ObjectId(collectionId), collection.songifiedNotes);
+      return studyToolColl;
+    } else {
+      throw new Error("No study tool for this collection");
+    }
   }
 
   @Router.post("/studytool/")
@@ -238,13 +245,6 @@ class Routes {
     return await StudyTool.updateStudyToolCollectionScores(new ObjectId(collectionId), results);
   }
 
-  /**
-   *  Grants a user access to the collection; can only be performed by author of collection
-   *
-   * @param session
-   * @param contentId the id of the collection
-   * @param userId the id of the user who will be granted access to the collection
-   */
   @Router.put("/collection_access_controls/users/:userId/accessibleContent")
   async grantUserAccessToCollection(session: WebSessionDoc, contentId: string, userId: string) {
     const user = WebSession.getUser(session);
@@ -260,12 +260,6 @@ class Routes {
     return await CollectionAccessControl.putAccess(parsedUserId, parsedCollectionId);
   }
 
-  /**
-   * Makes the collection accessable to every user
-   *
-   * @param session of user who owns the collection
-   * @param contentId
-   */
   @Router.put("/collection_access_controls/public_collections/:contentId")
   async makeCollectionPublic(session: WebSessionDoc, contentId: string) {
     const user = WebSession.getUser(session);
@@ -318,59 +312,44 @@ class Routes {
     return await CollectionAccessControl.removeAccess(parsedUserId, parsedCollectionId, user); // TODO: store author as state Or read from songcollectionconcept
   }
 
-  /**
-   *
-   *
-   * @param session of a user
-   * @returns the collections that the user has access to (that aren't public)
-   */
-  @Router.get("/accessible_collections")
-  async getAccessibleCollectionsWithRestrictedAccess(session: WebSessionDoc) {
-    const user = WebSession.getUser(session);
-    const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getContentSharedWithUser(user)).map((id) => {
-      return SongCollection.getCollectionById(id);
-    });
-    const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
+  // @Router.get("/accessible_collections")
+  // async getAccessibleCollectionsWithRestrictedAccess(session: WebSessionDoc) {
+  //   const user = WebSession.getUser(session);
+  //   const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getContentSharedWithUser(user)).map((id) => {
+  //     return SongCollection.getCollectionById(id);
+  //   });
+  //   const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
 
-    return Responses.collections(accessibleCollections);
-  }
+  //   return Responses.collections(accessibleCollections);
+  // }
 
-  /**
-   *
-   *
-   * @param session of a user
-   * @returns the publicly accessible collections
-   */
-  @Router.get("/public_collections")
+  @Router.get("/publiccollections")
   async getPublicCollections() {
-    return getPublicCollections();
+    const publicColl = await CollectionAccessControl.getPublicContent();
+    const collectionObjsArr: SongCollectionDoc[] = [];
+    console.log("publicColl", publicColl);
+    for (const id of publicColl) {
+      const collectionObj = await SongCollection.getCollectionById(id);
+      if (collectionObj) {
+        collectionObjsArr.push(collectionObj);
+      }
+    }
+    return Responses.collections(collectionObjsArr);
   }
 
-  /**
-   *
-   *
-   * @param session of a user
-   * @returns the collections that the user has access to (that aren't public)
-   */
   @Router.get("/other_users/accessible_collections")
   async getAccessibleCollectionsFromOtherUsers(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
-    const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getContentSharedWithUser(user)).map((id) => {
+    const retrievalProcesses: Promise<SongCollectionDoc | null>[] = (await CollectionAccessControl.getContentSharedWithUser(user)).map((id) => {
       return SongCollection.getCollectionById(id);
     });
-    const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
+
+    const accessibleCollections: SongCollectionDoc[] = (await Promise.all(retrievalProcesses)).filter((collection): collection is SongCollectionDoc => collection !== null);
     const collectionsByOthers = accessibleCollections.filter((collection) => !idsAreEqual(collection.owner, user));
 
     return Responses.collections(collectionsByOthers);
   }
 
-  /**
-   *
-   *
-   * @param session of a user
-   * @param id the id of a collection
-   * @returns the contents of the collection, only if `user` has access to it
-   */
   @Router.get("/collections/:id")
   async getCollectionById(
     session: WebSessionDoc,
@@ -393,12 +372,6 @@ class Routes {
     return Responses.collection(await SongCollection.getCollectionById(parsedCollectionId));
   }
 
-  /**
-   *
-   * @param session of a user with access to the collection
-   * @param collectionId an ObjectId
-   * @returns the list of users who will have access to the collection if it is not public
-   */
   @Router.get("/collections/:collectionId/users_with_restricted_access")
   async getUsersWithRestrictedAccess(session: WebSessionDoc, collectionId: string) {
     const user = WebSession.getUser(session);
@@ -443,23 +416,16 @@ class Routes {
   }
 }
 
-async function getPublicCollections() {
-  const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getPublicContent()).map((id) => {
-    return SongCollection.getCollectionById(id);
-  });
-  const publicCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
+// async function getAccessibleCollectionsWithRestrictedAccess(session: WebSessionDoc) {
+//   const user = WebSession.getUser(session);
+//   const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getContentSharedWithUser(user)).map((id) => {
+//     return SongCollection.getCollectionById(id);
+//   });
+//   const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
 
-  return Responses.collections(publicCollections);
-}
-
-async function getAccessibleCollectionsWithRestrictedAccess(session: WebSessionDoc) {
-  const user = WebSession.getUser(session);
-  const retrievalProcesses: Promise<SongCollectionDoc>[] = (await CollectionAccessControl.getContentSharedWithUser(user)).map((id) => {
-    return SongCollection.getCollectionById(id);
-  });
-  const accessibleCollections: SongCollectionDoc[] = await Promise.all(retrievalProcesses);
-
-  return Responses.collections(accessibleCollections);
-}
+//   return Responses.collections(accessibleCollections);
+// }
+//   return Responses.collections(accessibleCollections);
+// }
 
 export default getExpressRouter(new Routes());

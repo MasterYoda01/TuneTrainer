@@ -15,7 +15,7 @@ const user = ref(router.currentRoute.value.params.user);
 const loaded = ref(false);
 const collections = ref<Array<Record<string, string>>>([]);
 const sharedCollections = ref<Array<Record<string, string>>>([]);
-const canEdit = ref(true); 
+const canEdit = ref(true);
 
 //finds all collections owned/shared by user
 onBeforeMount(async () => {
@@ -25,7 +25,7 @@ onBeforeMount(async () => {
     const sharedResponse = await fetchy(`/api/other_users/accessible_collections`, "GET");
     sharedCollections.value = sharedResponse;
 
-    const publicCollectionsresponse = await fetchy(`/api/public_collections`, "GET");
+    const publicCollectionsresponse = await fetchy(`/api/publiccollections`, "GET");
   } catch (error) {
     console.error("Error getting collection notes:", error);
   } finally {
@@ -36,7 +36,7 @@ onBeforeMount(async () => {
 
 <template>
   <main class="container">
-    <h3 class="major-labels">Collect<span style="color: #000;">ions</span></h3>
+    <h3 class="major-labels">Collect<span style="color: #000">ions</span></h3>
     <CreateCollectionComponent v-if="user == currentUsername" />
     <MultiCollectionsComponent v-if="loaded" :collections="collections" headerText="Collections" :canEdit="canEdit" />
     <MultiCollectionsComponent v-if="loaded" :collections="sharedCollections" headerText="Shared Collections" :canEdit="canEdit" />

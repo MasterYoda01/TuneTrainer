@@ -2,6 +2,7 @@
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { computed, defineProps, ref } from "vue";
+import router from "../../router";
 import { fetchy } from "../../utils/fetchy";
 
 const loading = ref(false);
@@ -12,7 +13,7 @@ console.log(note);
 const userStore = useUserStore();
 const { isLoggedIn, currentUsername } = storeToRefs(userStore);
 
-console.log(note._id);
+console.log("in songifiedNoteComponent.vue");
 
 const audioSrc = computed(() => {
   return new URL(`${note.backgroundMusicLink}`, import.meta.url).href;
@@ -21,9 +22,10 @@ const canEdit = ref<boolean>(note.author === currentUsername.value);
 
 const deleteNote = async () => {
   if (confirm("Are you sure you want to delete?")) {
-    await fetchy(`/api/delete/songifiednote/${note._id}`, "DELETE");
-    window.history.go(); //refresh page
+    let query = { _id: note._id };
+    await fetchy("/api/delete/songifiednote", "DELETE", { query });
     emit("refreshInnerCollections");
+    void router.push({ name: "Collections", params: { user: currentUsername.value } });
   }
 };
 </script>
@@ -36,12 +38,12 @@ const deleteNote = async () => {
   <div class="column-container">
     <section class="notes">
       <h3>Notes inputted</h3>
-     
+
       {{ note.rawNote }}
     </section>
     <section class="lyrics">
       <h3>Generated Song</h3>
-      
+
       {{ note.generatedLyrics }}
     </section>
   </div>
@@ -59,16 +61,16 @@ const deleteNote = async () => {
 </template>
 
 <style scoped>
-h3{
-    margin-bottom: 0.5em;
-    text-transform: uppercase;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    border-radius: 5px;
-    border: solid 1px #5cb48c;
-    padding: 3px 9px;
-    width: 100%;
+h3 {
+  margin-bottom: 0.5em;
+  text-transform: uppercase;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: 5px;
+  border: solid 1px #5cb48c;
+  padding: 3px 9px;
+  width: 100%;
 }
 .column-container {
   display: flex;

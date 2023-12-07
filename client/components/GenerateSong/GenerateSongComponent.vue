@@ -96,9 +96,9 @@ const submitNotes = async () => {
 
   try {
     let rawNote = userNotes.value;
-    let template = chosenTemplate.value;
+    let lyricsTemplate = chosenTemplate.value;
     let backgroundMusicLink = backgroundSongPath.value;
-    let query = { rawNote, template, backgroundMusicLink };
+    let query = { rawNote, lyricsTemplate, backgroundMusicLink };
     const response = await fetchy(`/api/generate/songifiednote`, "POST", { query });
     apiResponse.value = response.songifiednote.generatedLyrics;
     noteID.value = response.songifiednote._id;
