@@ -144,13 +144,12 @@ class Routes {
   //return objects of all songified notes in the collection
   @Router.get("/songifiednotes/collection/:collection_id")
   async getSongNotesInCollection(session: WebSessionDoc, collection_id: string) {
-    const user = WebSession.getUser(session);
     const songNoteIds = (await SongCollection.getCollectionById(new ObjectId(collection_id)))?.songifiedNotes;
     const songNotesArray = [];
     if (songNoteIds) {
       for (const songNoteId of songNoteIds) {
         const songNote = await SongifiedNote.getSongifiedNoteBySongId(songNoteId);
-        if (songNote !== null && (await SongifiedNoteAccessControl.canAccess(user, songNote._id))) songNotesArray.push(songNote); // TODO: Optimize speed
+        if (songNote) songNotesArray.push(songNote);
       }
     }
     return songNotesArray;
@@ -213,9 +212,8 @@ class Routes {
 
   @Router.get("/songifiednotes/id/:songId")
   async getSongifiedNotesBySongId(session: WebSessionDoc, songId: string) {
-    const user = WebSession.getUser(session);
     const parsedSongId: ObjectId = parseInputAsObjectId(songId);
-    await SongifiedNoteAccessControl.assertHasAccess(user, parsedSongId);
+
     const songNote = await SongifiedNote.getSongifiedNoteBySongId(parsedSongId);
     console.log(await Responses.songnote(songNote));
     return { msg: "Got Songified Note by _id!", songNote: await Responses.songnote(songNote) };
@@ -248,8 +246,9 @@ class Routes {
     return await StudyTool.updateStudyToolCollectionScores(new ObjectId(collectionId), results);
   }
 
-  @Router.put("/collection_access_controls/users/:userId/accessibleContent")
+  @Router.put("/collectionaccesscontrols/users/:userId/accessibleContent")
   async grantUserAccessToCollection(session: WebSessionDoc, contentId: string, userId: string) {
+    console.log("grant accessed");
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(contentId);
 
@@ -263,8 +262,9 @@ class Routes {
     return await CollectionAccessControl.putAccess(parsedUserId, parsedCollectionId);
   }
 
-  @Router.put("/collection_access_controls/public_collections/:contentId")
+  @Router.put("/collectionaccesscontrols/publiccollections/:contentId")
   async makeCollectionPublic(session: WebSessionDoc, contentId: string) {
+    console.log("makePublic accessed");
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(contentId);
 
@@ -281,7 +281,7 @@ class Routes {
    * @param session of user who owns the collection
    * @param contentId
    */
-  @Router.delete("/collection_access_controls/public_collections/:contentId")
+  @Router.delete("/collectionaccesscontrols/publiccollections/:contentId")
   async makeCollectionNonPublic(session: WebSessionDoc, contentId: string) {
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(contentId);
@@ -301,7 +301,7 @@ class Routes {
    * @param _id the id of the collection
    * @param userId the id of the user whose access will be removed from the collection
    */
-  @Router.delete("/collection_access_controls/users/:userId/accessibleContent/:_id")
+  @Router.delete("/collectionaccesscontrols/users/:userId/accessibleContent/:_id")
   async removeUserAccessToCollection(session: WebSessionDoc, _id: string, userId: string) {
     const user = WebSession.getUser(session);
 
@@ -340,7 +340,7 @@ class Routes {
     return Responses.collections(collectionObjsArr);
   }
 
-  @Router.get("/other_users/accessible_collections")
+  @Router.get("/otherusers/accessiblecollections")
   async getAccessibleCollectionsFromOtherUsers(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
     const retrievalProcesses: Promise<SongCollectionDoc | null>[] = (await CollectionAccessControl.getContentSharedWithUser(user)).map((id) => {

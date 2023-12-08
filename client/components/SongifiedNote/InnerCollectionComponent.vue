@@ -20,26 +20,27 @@ const audioSrc = computed(() => {
 </script>
 
 <template>
-  <section class="inner-comp">
-    <!-- Audio Player -->
-    <div v-if="songifiedNote" class="lyrics">{{ songifiedNote.generatedLyrics }}</div>
+  <div class="inner-comp">
+    <pre v-if="songifiedNote" class="lyrics">{{ songifiedNote.generatedLyrics }}</pre>
     <audio v-if="audioSrc" controls :src="audioSrc" type="audio/mpeg" id="music" preload="auto">Your browser does not support the audio element.</audio>
-  </section>
+  </div>
 </template>
 
 <style scoped>
 .lyrics {
-  font-size: 18px;
-  width: 75%;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 70%;
   border-right: solid 2px #999;
   margin-right: 4%;
   text-align: justify;
+  line-height: 0.9;
   padding-right: 4%;
 }
 .inner-comp {
   background-color: #fff;
   padding: 3% 4%;
   border: solid 1px #999;
+  width: 150vh;
   border-radius: 15px;
   display: flex;
 }
