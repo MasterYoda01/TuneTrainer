@@ -94,8 +94,7 @@ async function makeRestricted() {
 
 async function syncUsersWithAccess() {
   try {
-    const response = await fetchy(`/api/collectionaccesscontrols/${objectOfAccessControl.value.id}`, "GET");
-    console.log("Response", response);
+    const response = await fetchy(`/api/whohascollectionaccess/${objectOfAccessControl.value.id}`, "GET");
     accessControl.value = { usersWithExplicitAccess: response.usersWithExplicitAccess, isPublic: response.isPublic };
   } catch (_) {
     return;
@@ -139,11 +138,15 @@ onBeforeMount(async () => {
       <v-card>
         <div class="access-controler-content">
           <div class="field">
-            <h1 class="collectionObjectName">
-              Share "<b>{{ objectOfAccessControl.name }}</b
-              >"
-            </h1>
-
+            <div class="title-and-flag">
+              <h1 class="collectionObjectName">
+                Share "<b>{{ objectOfAccessControl.name }}</b
+                >"
+              </h1>
+              <span class="public-flag" :class="{ true: accessControl.isPublic, false: !accessControl.isPublic }">
+                {{ accessControl.isPublic ? "Public" : "Private" }}
+              </span>
+            </div>
             <label>
               Add a user:
               <v-text-field label="Username" v-model="subjectOfAccessControlName" />
@@ -173,7 +176,6 @@ onBeforeMount(async () => {
           </div>
           <div class="general_access">
             <h3>General access:</h3>
-            <p>Is Public? {{ accessControl.isPublic }}</p>
             <div class="options_for_general_access">
               <span>
                 <v-btn color="teal-lighten-3" v-bind:disabled="disableAccessControlButtons" @click="() => makePublic()"> Allow anyone with link </v-btn>
@@ -244,5 +246,84 @@ onBeforeMount(async () => {
 .popup-content h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.v-btn {
+  margin: 0.5rem 0; /* Space between buttons */
+  padding: 0.5rem 1rem; /* Padding for buttons */
+  border-radius: 5px; /* Rounded corners */
+}
+
+/* Styling for the isPublic flag */
+.public-flag {
+  padding: 0.3rem 0.6rem;
+  border-radius: 5px;
+  display: inline-block;
+  color: white;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.public-flag.true {
+  background-color: #4caf50; /* Green for true */
+}
+
+.public-flag.false {
+  background-color: #f44336; /* Red for false */
+}
+
+/* Additional Styling for Access User */
+.access-user p {
+  margin-right: 1rem; /* Space between username and button */
+}
+
+/* General Access Section */
+.general_access {
+  margin-top: 1rem;
+}
+
+.options_for_general_access span {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+}
+
+/* Card Actions */
+.v-card-actions {
+  padding: 1rem;
+}
+
+.title-and-flag {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.collectionObjectName {
+  font-size: 1.5rem;
+  flex-grow: 1;
+  margin-right: 1rem;
+}
+
+.public-flag {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.9rem; /* Smaller font size for flag */
+  border-radius: 5px;
+  display: inline-block;
+  color: white;
+  font-weight: bold;
+  background-color: #4caf50; /* Default color, will be overridden by classes */
+}
+
+.public-flag.true {
+  background-color: #4caf50; /* Green for true */
+}
+
+.public-flag.false {
+  background-color: #f44336; /* Red for false */
 }
 </style>

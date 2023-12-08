@@ -393,7 +393,7 @@ class Routes {
    * @returns usersWithExplicitAccess: the list of users who will have access to the collection if it is not public,
    *          isPublic: is true if collection is public
    */
-  @Router.get("/collection_access_controls/:collectionId")
+  @Router.get("/whohascollectionaccess/:collectionId")
   async getAccessControl(
     session: WebSessionDoc,
     collectionId: string,
@@ -406,6 +406,7 @@ class Routes {
       dateUpdated: Date;
     }[];
   }> {
+    console.log("inside", collectionId);
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(collectionId);
 
