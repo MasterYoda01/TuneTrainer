@@ -149,7 +149,7 @@ const finalSave = async () => {
 <template>
   <div class="column-container">
     <div class="notes-container">
-      <textarea v-model="userNotes" placeholder="Enter your notes here..." rows="7" class="notes-textarea"></textarea>
+      <textarea v-model="userNotes" placeholder="Enter your notes here..." rows="10" class="notes-textarea"></textarea>
       <section class="selection" v-if="!editMode">
         <button class="dropdown">
           {{ chosenSong ? chosenSong : "Choose Tune" }}

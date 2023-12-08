@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy"; // TODO: make faster by saving collections and their accessors locally, and only calling fetch when updates are made...
+import { storeToRefs } from "pinia";
 import { computed, onBeforeMount, ref } from "vue";
 type ContentIdentifier = { id: string; name: string };
 const defaultContentIdentifier = { id: "", name: "" };
+
+const userStore = useUserStore();
+const { currentUsername } = storeToRefs(userStore);
 
 const props = defineProps(["contentId"]);
 const emit = defineEmits(["deactivateAccessControlManagement"]);
@@ -35,6 +40,7 @@ async function userAllowedToModerateAccess(id: string): Promise<boolean> {
 async function activateAccessManager(id: string) {
   if (id === undefined) return;
   const userCanModerate: boolean = await userAllowedToModerateAccess(id);
+
   if (!userCanModerate) return;
   if (id.length === 0) {
     disableAccessControlButtons.value = true; // make a computed value.
@@ -128,15 +134,15 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <v-dialog width="500">
+  <v-dialog width="600">
     <template v-slot:activator="{ props }">
       <v-btn v-bind="props" text="Share"> </v-btn>
       <!--TODO: button should display summary of share status (restricted, public, private)-->
     </template>
 
     <template v-slot:default="{ isActive }">
-      <v-card>
-        <div class="access-controler-content">
+      <v-card style="border-radius: 15px">
+        <div class="access-controller-content">
           <div class="field">
             <div class="title-and-flag">
               <h1 class="collectionObjectName">
@@ -148,12 +154,12 @@ onBeforeMount(async () => {
               </span>
             </div>
             <label>
-              Add a user:
+              <div class="header">Add a user:</div>
               <v-text-field label="Username" v-model="subjectOfAccessControlName" />
             </label>
           </div>
           <v-btn
-            color="teal-lighten-3"
+            style="margin-top: -15px"
             v-bind:disabled="disableAccessControlButtons"
             @click="() => grantSubjectAccessToObject({ subject: subjectOfAccessControlName, object: objectOfAccessControl.id })"
           >
@@ -162,12 +168,16 @@ onBeforeMount(async () => {
 
           <!--show current state-->
           <div class="peopleWithAcces">
-            <h3>People with Access:</h3>
-            <ul>
+            <div class="header">Users with Access:</div>
+            <ul style="padding: 0 20px">
               <li v-for="user in accessControl.usersWithExplicitAccess" :key="user._id">
                 <div class="access-user">
                   <p>{{ user.username }}</p>
-                  <v-btn color="red-lighten-4" v-bind:disabled="disableAccessControlButtons" @click="() => removeSubjectAccessToObject({ subject: user.username, object: objectOfAccessControl.id })">
+                  <v-btn
+                    v-bind:disabled="disableAccessControlButtons"
+                    v-if="user.username !== currentUsername"
+                    @click="() => removeSubjectAccessToObject({ subject: user.username, object: objectOfAccessControl.id })"
+                  >
                     Remove
                   </v-btn>
                 </div>
@@ -178,31 +188,45 @@ onBeforeMount(async () => {
             <h3>General access:</h3>
             <div class="options_for_general_access">
               <span>
-                <v-btn color="teal-lighten-3" v-bind:disabled="disableAccessControlButtons" @click="() => makePublic()"> Allow anyone with link </v-btn>
-                <v-btn color="teal-lighten-1" v-bind:disabled="disableAccessControlButtons" @click="() => makeRestricted()"> Restrict to people with access </v-btn>
+                <v-btn v-if="!disableAccessControlButtons" @click="() => makePublic()" :class="{ active: !accessControl.isPublic }">Public</v-btn>
+                <v-btn v-if="!disableAccessControlButtons" @click="() => makeRestricted()" :class="{ active: accessControl.isPublic }">Private Access</v-btn>
               </span>
             </div>
           </div>
         </div>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-
-          <v-btn
-            text="Back>"
-            @click="
-              () => {
-                isActive.value = false;
-              }
-            "
-          ></v-btn>
-        </v-card-actions>
+        <v-btn
+          text="Close"
+          @click="
+            () => {
+              isActive.value = false;
+            }
+          "
+          style="margin-top: 2em; font-weight: 600"
+        />
       </v-card>
     </template>
   </v-dialog>
 </template>
 
 <style scoped>
+h2 {
+  font-size: 30px;
+  text-transform: uppercase;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+}
+.header {
+  margin-top: 15px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 15px;
+}
+
+.active {
+  background-color: #5cb48c;
+  color: #fff;
+}
 .accessControlManager {
   position: fixed;
   top: 0;
@@ -215,10 +239,13 @@ onBeforeMount(async () => {
   align-items: center;
 }
 
-.access-controler-content {
-  padding: 2rem;
+.access-controller-content {
+  padding: 1em 2em;
 }
 
+li {
+  margin-top: 0px;
+}
 .access-user {
   display: flex;
   flex-direction: row;
