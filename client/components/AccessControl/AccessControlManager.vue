@@ -145,10 +145,7 @@ onBeforeMount(async () => {
         <div class="access-controller-content">
           <div class="field">
             <div class="title-and-flag">
-              <h1 class="collectionObjectName">
-                Share "<b>{{ objectOfAccessControl.name }}</b
-                >"
-              </h1>
+              <h2 class="collectionObjectName">Share "<b>{{ objectOfAccessControl.name }}</b>"</h2>
               <span class="public-flag" :class="{ true: accessControl.isPublic, false: !accessControl.isPublic }">
                 {{ accessControl.isPublic ? "Public" : "Private" }}
               </span>
@@ -161,8 +158,7 @@ onBeforeMount(async () => {
           <v-btn
             style="margin-top: -15px"
             v-bind:disabled="disableAccessControlButtons"
-            @click="() => grantSubjectAccessToObject({ subject: subjectOfAccessControlName, object: objectOfAccessControl.id })"
-          >
+            @click="() => grantSubjectAccessToObject({ subject: subjectOfAccessControlName, object: objectOfAccessControl.id })">
             Grant access
           </v-btn>
 
@@ -173,42 +169,43 @@ onBeforeMount(async () => {
               <li v-for="user in accessControl.usersWithExplicitAccess" :key="user._id">
                 <div class="access-user">
                   <p>{{ user.username }}</p>
-                  <v-btn
+                  <button
                     v-bind:disabled="disableAccessControlButtons"
+                    class="remove-button"
                     v-if="user.username !== currentUsername"
-                    @click="() => removeSubjectAccessToObject({ subject: user.username, object: objectOfAccessControl.id })"
-                  >
-                    Remove
-                  </v-btn>
+                    @click="() => removeSubjectAccessToObject({ subject: user.username, object: objectOfAccessControl.id })">
+                    x
+                  </button>
                 </div>
               </li>
             </ul>
           </div>
           <div class="general_access">
-            <h3>General access:</h3>
+            <div class="header">General access:</div>
             <div class="options_for_general_access">
               <span>
-                <v-btn v-if="!disableAccessControlButtons" @click="() => makePublic()" :class="{ active: !accessControl.isPublic }">Public</v-btn>
-                <v-btn v-if="!disableAccessControlButtons" @click="() => makeRestricted()" :class="{ active: accessControl.isPublic }">Private Access</v-btn>
+                <v-btn v-if="!disableAccessControlButtons" @click="() => makePublic()">Public</v-btn>
+                <v-btn v-if="!disableAccessControlButtons" @click="() => makeRestricted()">Private Access</v-btn>
               </span>
             </div>
           </div>
         </div>
-        <v-btn
-          text="Close"
-          @click="
-            () => {
-              isActive.value = false;
-            }
-          "
-          style="margin-top: 2em; font-weight: 600"
-        />
+        <v-btn text="Close" @click="()=>{isActive.value = false;}" style="margin-top: 2em; font-weight: 600; margin-bottom: 0px;"/>
       </v-card>
     </template>
   </v-dialog>
 </template>
 
 <style scoped>
+.remove-button{
+  border: 0;
+  padding: 1px;
+  border-radius: 15px;
+  color: #999;
+}
+.remove-button:hover{
+  color: #fff;
+}
 h2 {
   font-size: 30px;
   text-transform: uppercase;
@@ -241,10 +238,6 @@ h2 {
 
 .access-controller-content {
   padding: 1em 2em;
-}
-
-li {
-  margin-top: 0px;
 }
 .access-user {
   display: flex;
@@ -316,7 +309,6 @@ li {
 
 .options_for_general_access span {
   display: flex;
-  flex-direction: column; /* Stack buttons vertically */
 }
 
 /* Card Actions */
@@ -352,5 +344,10 @@ li {
 
 .public-flag.false {
   background-color: #f44336; /* Red for false */
+}
+
+li{
+  margin-top: -10px;
+  margin-bottom: -8px;
 }
 </style>
