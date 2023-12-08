@@ -23,7 +23,7 @@ onBeforeMount(async () => {
   try {
     const response = await fetchy(`/api/users/${user.value}/collections`, "GET", {});
     collections.value = response;
-    const sharedResponse = await fetchy(`/api/other_users/accessible_collections`, "GET");
+    const sharedResponse = await fetchy(`/api/otherusers/accessiblecollections`, "GET");
     sharedCollections.value = sharedResponse;
 
     const publicCollectionsresponse = await fetchy(`/api/publiccollections`, "GET");
@@ -39,7 +39,7 @@ onBeforeMount(async () => {
   <main class="container">
     <h3 class="major-labels">Collect<span style="color: #000">ions</span></h3>
     <CreateCollectionComponent v-if="user == currentUsername" />
-    <MultiCollectionsComponent style="margin-top: 4em;" v-if="loaded" :collections="collections" headerText="Collections" :canEdit="canEdit" />
+    <MultiCollectionsComponent style="margin-top: 4em" v-if="loaded" :collections="collections" headerText="Collections" :canEdit="canEdit" />
     <MultiCollectionsComponent v-if="loaded" :collections="sharedCollections" headerText="Shared Collections" :canEdit="canEditShared" />
   </main>
 </template>
