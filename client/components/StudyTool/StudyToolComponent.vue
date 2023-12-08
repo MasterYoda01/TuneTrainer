@@ -7,7 +7,7 @@ import { fetchy } from "../../utils/fetchy";
 const userStore = useUserStore();
 const { currentUsername } = storeToRefs(userStore);
 const collections = ref<Array<Record<string, string>>>([]);
-const selectedCollectionTitle = ref(""); 
+const selectedCollectionTitle = ref("");
 const selectedCollectionID = ref("");
 const chosen = ref(false);
 const currentCardIndex = ref(0);
@@ -125,7 +125,7 @@ async function getUserCollections() {
   try {
     const response = await fetchy(`/api/users/${currentUsername.value}/collections`, "GET", {});
     collections.value = response;
-    const sharedResponse = await fetchy(`/api/other_users/accessible_collections`, "GET");
+    const sharedResponse = await fetchy(`/api/otherusers/accessiblecollections`, "GET");
     collections.value = collections.value.concat(sharedResponse);
   } catch (error) {
     console.error("Error getting collection notes:", error);
@@ -164,7 +164,7 @@ async function getStudyCollection() {
     }
   } catch (error) {
     console.error(error);
-  } finally{
+  } finally {
     chosen.value = true;
   }
 }
@@ -176,15 +176,16 @@ onBeforeMount(async () => {
   }
 });
 
-function changeSelection(collection: Record<string, string>){
+function changeSelection(collection: Record<string, string>) {
   selectedCollectionID.value = collection._id;
-  selectedCollectionTitle.value = collection.title; 
+  selectedCollectionTitle.value = collection.title;
 }
 </script>
 
 <template>
   <main class="study-tool-container">
-    <h3 v-if="!chosen">Choose a song collection to study!</h3><p/>
+    <h3 v-if="!chosen">Choose a song collection to study!</h3>
+    <p />
     <div class="selection" v-if="!chosen">
       <button class="dropdown">
         {{ selectedCollectionTitle ? selectedCollectionTitle : "Choose Collection" }}
@@ -202,7 +203,7 @@ function changeSelection(collection: Record<string, string>){
     <section v-if="chosen">
       <button v-if="studyCollection.cards.length > 0" @click="finishStudying" class="finish">Finish Studying</button>
       <div v-if="guessResult.isCorrect === false" class="incorrect-msg">Try Again!</div>
-      
+
       <div class="study-cards" v-if="studyCollection.cards.length > 0">
         <h3>Card {{ currentCardIndex + 1 }} of {{ studyCollection.cards.length }}</h3>
         <template v-for="(word, index) in currLyrics" :key="index">
@@ -212,9 +213,9 @@ function changeSelection(collection: Record<string, string>){
         </template>
       </div>
       <div class="navigation-buttons">
-          <button @click="checkAnswers" style="color:#5cb48c">Submit</button>
-          <button @click="prevCard" class="switch" :disabled="currentCardIndex === 0">Previous</button>
-          <button @click="nextCard" class="switch" :disabled="currentCardIndex >= studyCollection.cards.length - 1">Next</button>
+        <button @click="checkAnswers" style="color: #5cb48c">Submit</button>
+        <button @click="prevCard" class="switch" :disabled="currentCardIndex === 0">Previous</button>
+        <button @click="nextCard" class="switch" :disabled="currentCardIndex >= studyCollection.cards.length - 1">Next</button>
       </div>
     </section>
   </main>
@@ -223,7 +224,7 @@ function changeSelection(collection: Record<string, string>){
 button:disabled {
   display: none;
 }
-.finish{
+.finish {
   color: black;
   padding: 14px 20px;
   margin: -3% 0 2em;
@@ -235,11 +236,11 @@ button:disabled {
   border: solid 2px #5cb48c;
   background-color: #f9f9f9;
 }
-.finish:hover{
+.finish:hover {
   color: #fff;
   background-color: #5cb48c;
 }
-h3{
+h3 {
   font-size: 16px;
   font-family: Arial, Helvetica, sans-serif;
   text-transform: uppercase;
@@ -265,7 +266,6 @@ h3{
   font-weight: 600;
   font-size: 15px;
   position: relative;
-  
 }
 .dropdown:hover .collection-dropdown {
   display: block;
@@ -314,7 +314,7 @@ h3{
   float: right;
   gap: 1em;
 }
-.navigation-buttons button{
+.navigation-buttons button {
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
@@ -322,11 +322,11 @@ h3{
   padding: 4px 6px;
   border-radius: 9px;
 }
-.navigation-buttons button:hover{
+.navigation-buttons button:hover {
   background-color: #999;
   color: #fff;
 }
-.navigation-buttons .switch:hover{
+.navigation-buttons .switch:hover {
   border: solid 2px #5cb48c;
   background-color: #f1f3f5;
   padding: 2px 4px;
@@ -349,10 +349,10 @@ h3{
   border-radius: 3px;
   border: 1px solid #5cb48c;
 }
-button[type="submit"]{
+button[type="submit"] {
   text-align: left;
 }
-button[type="submit"]:hover{
+button[type="submit"]:hover {
   background-color: #5cb48c;
   color: #fff;
 }
