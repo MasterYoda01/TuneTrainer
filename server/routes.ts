@@ -132,7 +132,7 @@ class Routes {
     return { msg: created.msg, collection: await Responses.collection(created.songCollection) };
   }
 
-  @Router.post("/collection/add/")
+  @Router.post("/addnote/collection/")
   async addNote(session: WebSessionDoc, collection_id: string, songifiedNoteToAdd: string) {
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(collection_id);
