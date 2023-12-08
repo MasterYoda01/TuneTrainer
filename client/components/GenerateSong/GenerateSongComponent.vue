@@ -167,7 +167,10 @@ const finalSave = async () => {
       <span class="error-message">{{ errorMessage }}</span>
     </div>
     <div class="response-container" v-if="!editMode">
-      <div v-if="loading" class="loading-message">Generating the song...</div>
+      <div v-if="loading" class="loading-message">
+        <div class="spinner"></div>
+        Generating the song...
+      </div>
       <h3 v-else>Enter your notes!</h3>
     </div>
     <div class="response-container" v-else>
@@ -304,6 +307,24 @@ const finalSave = async () => {
   height: 50%;
   resize: vertical;
   flex: 1;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border-left-color: #09f;
+  animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-message {
