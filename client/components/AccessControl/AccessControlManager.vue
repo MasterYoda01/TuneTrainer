@@ -67,7 +67,7 @@ async function grantSubjectAccessToObject(requestedAccessControl: AccessRequestI
   }
 
   try {
-    await fetchy(`/api/collection_access_controls/users/${subjectId}/accessibleContent`, "PUT", { body: { contentId: requestedAccessControl.object } }); // TODO: display state of user access (whether they have it or not)
+    await fetchy(`/api/collectionaccesscontrols/users/${subjectId}/accessibleContent`, "PUT", { body: { contentId: requestedAccessControl.object } }); // TODO: display state of user access (whether they have it or not)
     await syncUsersWithAccess();
   } catch (_) {
     return;
@@ -76,7 +76,7 @@ async function grantSubjectAccessToObject(requestedAccessControl: AccessRequestI
 
 async function makePublic() {
   try {
-    await fetchy(`/api/collection_access_controls/publiccollections/${objectOfAccessControl.value.id}`, "PUT");
+    await fetchy(`/api/collectionaccesscontrols/publiccollections/${objectOfAccessControl.value.id}`, "PUT");
     await syncUsersWithAccess();
   } catch (_) {
     return;
@@ -85,7 +85,7 @@ async function makePublic() {
 
 async function makeRestricted() {
   try {
-    await fetchy(`/api/collection_access_controls/publiccollections/${objectOfAccessControl.value.id}`, "DELETE");
+    await fetchy(`/api/collectionaccesscontrols/publiccollections/${objectOfAccessControl.value.id}`, "DELETE");
     await syncUsersWithAccess();
   } catch (_) {
     return;
@@ -94,7 +94,8 @@ async function makeRestricted() {
 
 async function syncUsersWithAccess() {
   try {
-    const response = await fetchy(`/api/collection_access_controls/${objectOfAccessControl.value.id}`, "GET");
+    const response = await fetchy(`/api/collectionaccesscontrols/${objectOfAccessControl.value.id}`, "GET");
+    console.log("Response", response);
     accessControl.value = { usersWithExplicitAccess: response.usersWithExplicitAccess, isPublic: response.isPublic };
   } catch (_) {
     return;
@@ -113,7 +114,7 @@ async function removeSubjectAccessToObject(requestedAccessControl: AccessRequest
   }
 
   try {
-    await fetchy(`/api/collection_access_controls/users/${subjectId}/accessibleContent/${requestedAccessControl.object}`, "DELETE"); // TODO: display state of user access (whether they have it or not)
+    await fetchy(`/api/collectionaccesscontrols/users/${subjectId}/accessibleContent/${requestedAccessControl.object}`, "DELETE"); // TODO: display state of user access (whether they have it or not)
   } catch (_) {
     return;
   }
