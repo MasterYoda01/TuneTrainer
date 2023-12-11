@@ -18,15 +18,9 @@ export default class PostConcept {
   async getStudyToolCollection(collectionId: ObjectId, songNoteIds: ObjectId[]) {
     // Read and see if this collection already exists
     let studyToolCollection = await this.studytool.readOne({ originalCollectionId: collectionId });
-
-    console.log("songsIds", studyToolCollection, songNoteIds);
-
     if (studyToolCollection) {
       // Update the existing entry
       const currentCoefficients = JSON.parse(JSON.stringify(studyToolCollection.songNotesCoefficients));
-
-      console.log("Original coefficients:", currentCoefficients);
-
       const songNoteIdStrings = new Set(songNoteIds.map((id) => id.toString()));
 
       for (const songId of Object.keys(currentCoefficients)) {
@@ -36,15 +30,12 @@ export default class PostConcept {
       }
       for (const songNoteIdStr of songNoteIdStrings) {
         if (!Object.prototype.hasOwnProperty.call(currentCoefficients, songNoteIdStr)) {
-          console.log("updating to 1");
           currentCoefficients[songNoteIdStr] = 1;
         }
       }
 
       await this.studytool.updateOne({ _id: studyToolCollection._id }, { songNotesCoefficients: currentCoefficients });
       studyToolCollection = await this.studytool.readOne({ _id: studyToolCollection._id });
-
-      console.log("Updated studyToolCollection:", studyToolCollection);
     } else {
       // Create a new entry
       const initialCoefficients = songNoteIds.reduce<Coefficients>((acc, songNoteId) => {

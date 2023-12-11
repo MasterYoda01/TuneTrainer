@@ -93,7 +93,6 @@ class Routes {
   async deleteSongifiedNote(session: WebSessionDoc, _id: string, collectionid: string) {
     const user = WebSession.getUser(session);
     const parsedNoteId = parseInputAsObjectId(_id);
-    console.log("COL ID", collectionid);
     await SongifiedNote.isAuthor(user, parsedNoteId);
 
     await SongifiedNote.deleteSongifiedNote(_id);
@@ -122,7 +121,6 @@ class Routes {
   // generate songified note concept
   @Router.post("/create/collection/")
   async createCollection(session: WebSessionDoc, title: string, description: string) {
-    console.log("in collection");
     const user = WebSession.getUser(session);
     const created = await SongCollection.create(user, title, description);
     if (created.songCollection !== null) {
@@ -214,9 +212,7 @@ class Routes {
   @Router.get("/songifiednotes/id/:songId")
   async getSongifiedNotesBySongId(session: WebSessionDoc, songId: string) {
     const parsedSongId: ObjectId = parseInputAsObjectId(songId);
-
     const songNote = await SongifiedNote.getSongifiedNoteBySongId(parsedSongId);
-    console.log(await Responses.songnote(songNote));
     return { msg: "Got Songified Note by _id!", songNote: await Responses.songnote(songNote) };
   }
 
@@ -242,14 +238,11 @@ class Routes {
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(collectionId);
     await CollectionAccessControl.assertHasAccess(user, parsedCollectionId);
-    console.log("Type of newCoeffs:", typeof results, Array.isArray(results));
-
     return await StudyTool.updateStudyToolCollectionScores(new ObjectId(collectionId), results);
   }
 
   @Router.put("/collectionaccesscontrols/users/:userId/accessibleContent")
   async grantUserAccessToCollection(session: WebSessionDoc, contentId: string, userId: string) {
-    console.log("grant accessed");
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(contentId);
 
@@ -265,7 +258,6 @@ class Routes {
 
   @Router.put("/collectionaccesscontrols/publiccollections/:contentId")
   async makeCollectionPublic(session: WebSessionDoc, contentId: string) {
-    console.log("makePublic accessed");
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(contentId);
 
@@ -331,7 +323,6 @@ class Routes {
   async getPublicCollections() {
     const publicColl = await CollectionAccessControl.getPublicContent();
     const collectionObjsArr: SongCollectionDoc[] = [];
-    console.log("publicColl", publicColl);
     for (const id of publicColl) {
       const collectionObj = await SongCollection.getCollectionById(id);
       if (collectionObj) {
@@ -407,7 +398,6 @@ class Routes {
       dateUpdated: Date;
     }[];
   }> {
-    console.log("inside", collectionId);
     const user = WebSession.getUser(session);
     const parsedCollectionId: ObjectId = parseInputAsObjectId(collectionId);
 

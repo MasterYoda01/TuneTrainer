@@ -20,10 +20,8 @@ const audioSrc = computed(() => {
 </script>
 
 <template>
-  <audio v-if="audioSrc" controls :src="audioSrc" type="audio/mpeg" id="music" preload="auto" style="float: right;">
-    Your browser does not support the audio element.
-  </audio>
-  <div class="inner-comp" style="margin-top: 1em;">
+  <audio v-if="audioSrc" controls :src="audioSrc" type="audio/mpeg" id="music" preload="auto" style="float: right">Your browser does not support the audio element.</audio>
+  <div class="inner-comp" style="margin-top: 1em">
     <pre v-if="songifiedNote" class="lyrics">{{ songifiedNote.generatedLyrics }}</pre>
   </div>
 </template>
@@ -32,14 +30,15 @@ const audioSrc = computed(() => {
 .lyrics {
   font-family: Arial, Helvetica, sans-serif;
   text-align: justify;
-  line-height: 0.9;
+  line-height: 15px;
 }
 .inner-comp {
   background-color: #fff;
   padding: 3% 4%;
   border: solid 1px #999;
+  line-height: 15px;
   border-radius: 15px;
-  width:100%;
+  width: 100%;
   column-count: 2;
 }
 </style>

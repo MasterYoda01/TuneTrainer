@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
-import { onBeforeMount, reactive, ref } from "vue";
+import { computed, nextTick, onBeforeMount, reactive, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
 const userStore = useUserStore();
@@ -17,6 +17,17 @@ interface Card {
   coeff: number;
   lyrics: string;
 }
+
+const borderClass = computed(() => {
+  const coeff = studyCollection.cards[currentCardIndex.value]?.coeff || 0;
+  if (coeff > 0.9) {
+    return "border-green";
+  } else if (coeff > 0.5) {
+    return "border-yellow";
+  } else {
+    return "border-red";
+  }
+});
 
 const studyCollection = reactive({
   cards: [] as Card[],
@@ -89,10 +100,19 @@ function checkAnswers() {
   });
 
   const currentCard = studyCollection.cards[currentCardIndex.value];
+
+  const studyCards = document.querySelector(".study-cards");
+
   if (correct) {
+    studyCards?.classList.remove("shake", "correct");
+    setTimeout(() => studyCards?.classList.add("correct"), 0);
+
     currentCard.coeff += 0.1;
     guessResult.value = { isCorrect: true, showNext: true };
   } else {
+    studyCards?.classList.remove("shake", "correct");
+    setTimeout(() => studyCards?.classList.add("shake"), 0);
+
     currentCard.coeff -= 0.2;
     guessResult.value = { isCorrect: false, showNext: false };
   }
@@ -118,6 +138,7 @@ function prevCard() {
 
 function resetGuessAndLoadNewCard() {
   guessResult.value = { isCorrect: null, showNext: false };
+
   replaceRandomWords(studyCollection.cards[currentCardIndex.value].lyrics);
 }
 
@@ -142,6 +163,21 @@ async function getSongNoteById(songNoteId: string) {
   }
 }
 
+function updateStudyCardBorder(coeff: number) {
+  const studyCards = document.querySelector(".study-cards");
+  if (!studyCards) return;
+
+  studyCards.classList.remove("border-green", "border-yellow", "border-red");
+
+  if (coeff > 0.9) {
+    studyCards.classList.add("border-green");
+  } else if (coeff > 0.5) {
+    studyCards.classList.add("border-yellow");
+  } else {
+    studyCards.classList.add("border-red");
+  }
+}
+
 async function getStudyCollection() {
   try {
     const response = await fetchy(`/api/studytool/${selectedCollectionID.value}`, "GET", {});
@@ -161,6 +197,8 @@ async function getStudyCollection() {
 
     if (studyCollection.cards.length > 0) {
       replaceRandomWords(studyCollection.cards[currentCardIndex.value].lyrics);
+      await nextTick();
+      updateStudyCardBorder(studyCollection.cards[currentCardIndex.value].coeff);
     }
   } catch (error) {
     console.error(error);
@@ -204,7 +242,7 @@ function changeSelection(collection: Record<string, string>) {
       <button v-if="studyCollection.cards.length > 0" @click="finishStudying" class="finish">Finish Studying</button>
       <div v-if="guessResult.isCorrect === false" class="incorrect-msg">Try Again!</div>
 
-      <div class="study-cards" v-if="studyCollection.cards.length > 0">
+      <div class="study-cards" :class="borderClass" v-if="studyCollection.cards.length > 0">
         <h3>Card {{ currentCardIndex + 1 }} of {{ studyCollection.cards.length }}</h3>
         <template v-for="(word, index) in currLyrics" :key="index">
           <span v-if="!wordsToGuess.some((item) => item.index === index)">{{ word }}</span>
@@ -224,6 +262,36 @@ function changeSelection(collection: Record<string, string>) {
 button:disabled {
   display: none;
 }
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-10px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .finish {
   color: black;
   padding: 14px 20px;
@@ -304,9 +372,18 @@ h3 {
 .incorrect-msg {
   color: red;
   font-weight: bold;
+  font-size: 25px;
   margin-top: 10px;
   float: right;
-  animation: 5s infinite alternate slidein;
+  animation: fade 1s ease-out;
+}
+
+.shake {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.correct {
+  animation: fade 2s ease-out;
 }
 .navigation-buttons {
   margin-top: 0;
@@ -341,6 +418,18 @@ h3 {
   margin-bottom: 20px;
   background-color: #f9f9f9;
 }
+.border-green {
+  border-color: green;
+}
+
+.border-yellow {
+  border-color: yellow;
+}
+
+.border-red {
+  border-color: red;
+}
+
 .study-cards input {
   background-color: #fff;
   padding: 1px 3px;

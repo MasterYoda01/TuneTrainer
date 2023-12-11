@@ -17,7 +17,6 @@ const collectionDesc = ref("");
 const getUsersCollections = async () => {
   try {
     const response = await fetchy(`/api/users/${currentUsername.value}/collections`, "GET", {});
-    console.log("user collection", response);
     collections.value = response;
   } catch (error) {
     console.error("Error getting collection notes:", error);
@@ -35,7 +34,6 @@ const createCollection = async () => {
   try {
     let query = { title: collectionTitle.value, description: collectionDesc.value };
     const response = await fetchy(`/api/create/collection`, "POST", { query });
-    console.log(response);
     collections.value.push(response.collection);
   } catch (e) {
     console.log(e);

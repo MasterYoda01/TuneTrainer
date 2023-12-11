@@ -11,7 +11,6 @@ const props = defineProps(["note"]);
 
 const emit = defineEmits(["refreshInnerCollections"]);
 const note = props.note;
-console.log(note);
 const route = useRoute();
 
 const collectionId = route.params.collectionid; // Adjust the parameter name if needed
@@ -27,7 +26,6 @@ const canEdit = ref<boolean>(note.author === currentUsername.value);
 const deleteNote = async () => {
   if (confirm("Are you sure you want to delete?")) {
     const collection_id = String(collectionId);
-    console.log("coll id", collection_id);
     let query = { _id: note._id, collectionid: collection_id };
     await fetchy("/api/delete/songifiednote", "DELETE", { query });
     emit("refreshInnerCollections");

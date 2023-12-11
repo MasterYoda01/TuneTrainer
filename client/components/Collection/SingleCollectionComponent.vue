@@ -19,7 +19,6 @@ async function getSongNotesOfCollection(collection_id: string) {
   try {
     if (collection_id !== undefined) {
       const resp = await fetchy(`/api/songifiednotes/collection/${collection_id}`, "GET", {});
-      console.log("RESPS", resp);
       songifiedNotes.value = resp;
     }
   } catch (e) {
@@ -53,7 +52,7 @@ onBeforeMount(async () => {
   </section>
   <p class="description">{{ collection.description }}</p>
   <section class="song-notes-container">
-    <div v-for="note in songifiedNotes" :key="note._id" style="margin-bottom: 2em;">
+    <div v-for="note in songifiedNotes" :key="note._id" style="margin-bottom: 2em">
       <RouterLink class="song-note-link" @refreshInnerCollections="getSongNotesOfCollection" :to="{ name: 'SongNote', params: { id: note._id, collectionid: collection._id } }">
         <InnerCollectionComponent :songifiedNote="{ backgroundMusicLink: note.backgroundMusicLink, generatedLyrics: note.generatedLyrics }" :collectionId="collection._id" />
       </RouterLink>
@@ -92,7 +91,7 @@ h2 {
   color: #000;
   text-decoration: none;
 }
-.song-note-link:hover{
+.song-note-link:hover {
   background-color: #ccc;
 }
 .feed-row {

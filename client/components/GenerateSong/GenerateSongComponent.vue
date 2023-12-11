@@ -121,7 +121,6 @@ const changeTemplate = async (lyrics: string, title: string, path: string) => {
 
 const deleteNote = async () => {
   if (confirm("Are you sure you want to delete?")) {
-    console.log(noteID.value);
     loading.value = true;
 
     let query = { _id: noteID.value };
@@ -132,7 +131,6 @@ const deleteNote = async () => {
 
 const finalSave = async () => {
   if (chosenCollection.value) {
-    console.log(noteID.value, chosenCollection.value._id);
     loading.value = true;
 
     let query = { collection_id: chosenCollection.value._id, songifiedNoteToAdd: noteID.value };

@@ -90,7 +90,6 @@ export default class SongCollectionConcept {
 
   async deleteNoteFromCollection(collection_id: string, songifiedNoteId: string) {
     const songCollection = await this.songCollections.readOne({ _id: new ObjectId(collection_id) });
-    console.log("SONG NOTES", songCollection);
 
     if (songCollection && songCollection.songifiedNotes) {
       // Filter out the songifiedNoteId from the songifiedNotes array

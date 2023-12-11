@@ -11,8 +11,7 @@ const { loginUser, updateSession } = useUserStore();
 
 async function login() {
   try {
-    const logindata = await loginUser(username.value, password.value);
-    console.log(logindata);
+    await loginUser(username.value, password.value);
     await updateSession();
     void router.push({ name: "GenerateSong" });
   } catch (error) {
@@ -47,8 +46,7 @@ h3 {
   justify-content: center;
 }
 
-.pure-control-group{
+.pure-control-group {
   margin-bottom: -2%;
 }
-
 </style>
